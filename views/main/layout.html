@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no" />
+    <title>博客</title>
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/public/css/main.css" type="text/css">
+    <script src="/public/js/jquery-2.1.4.min.js"></script>
+    <script src="/public/js/bootstrap.min.js"></script>
+    <script src="/public/js/main.js"></script>
+</head>
+<body>
+<header class="header">
+    <div class="container">
+        <div class="nav row">
+            <div class=" col-lg-2 col-md-6 col-sm-6 col-xs-6 text-left">
+                <a href="/">
+                    <img class="img-circle" width="58" height="58" src="/public/img/logo.jpg" alt=""> HGQ
+                </a>
+            </div>
+            <div class="active col-lg-1 hidden-md hidden-xs hidden-sm text-center">
+                <a href="/"><span class=" glyphicon glyphicon-home"></span> 首页</a>
+            </div>
+            <div class=" col-lg-1 hidden-md hidden-xs hidden-sm  text-center">
+                <a href="/contact"><span class="glyphicon glyphicon-comment"></span> 留言</a>
+            </div>
+            <div class=" col-lg-1 hidden-md hidden-xs hidden-sm  text-center">
+                <a href="/about"><span class="glyphicon glyphicon-link"></span> 关于我</a>
+            </div>
+            <!--<div class=" col-lg-1 hidden-md hidden-xs hidden-sm  text-center">-->
+                <!--<a href="/serve"><span class="glyphicon glyphicon-globe"></span> 服务</a>-->
+            <!--</div>-->
+            <div class="col-lg-4  col-lg-offset-3 col-md-offset-3 hidden-md hidden-xs hidden-sm text-right">
+                {% if userInfo._id %}
+                <div class="userInfo">
+                    <img style="margin: 10px;" class="img-rounded" width="40" height="40" src="/public/img/user-pic/{{userInfo.userImg}}.png" alt="">
+                    <span class="username">{{userInfo.username}}</span>
+                    {% if userInfo.isAdmin %}
+                    <a href="/admin">进入后台管理</a>
+                    {% else %}
+                    {% endif %}
+                    <a class="logout" style="color: red;" href="javascript:;">退出</a>
+                </div>
+                {% else %}
+                <a class="log" href="javascript:;"><span class="glyphicon glyphicon-user"></span> 登录</a>
+                {% endif %}
+            </div>
+            <div class="userImg">
+                <img src="/public/img/user-pic/0.png" alt="">
+                <img src="/public/img/user-pic/1.png" alt="">
+                <img src="/public/img/user-pic/2.png" alt="">
+                <img src="/public/img/user-pic/3.png" alt="">
+                <img src="/public/img/user-pic/4.png" alt="">
+                <img src="/public/img/user-pic/5.png" alt="">
+                <img src="/public/img/user-pic/6.png" alt="">
+                <img src="/public/img/user-pic/7.png" alt="">
+                <img src="/public/img/user-pic/8.png" alt="">
+                <img src="/public/img/user-pic/9.png" alt="">
+                <img src="/public/img/user-pic/10.png" alt="">
+                <img src="/public/img/user-pic/11.png" alt="">
+                <img src="/public/img/user-pic/12.png" alt="">
+                <img src="/public/img/user-pic/13.png" alt="">
+                <img src="/public/img/user-pic/14.png" alt="">
+                <img src="/public/img/user-pic/15.png" alt="">
+                <img src="/public/img/user-pic/16.png" alt="">
+                <img src="/public/img/user-pic/17.png" alt="">
+                <img src="/public/img/user-pic/18.png" alt="">
+                <img src="/public/img/user-pic/19.png" alt="">
+                <img src="/public/img/user-pic/20.png" alt="">
+                <img src="/public/img/user-pic/21.png" alt="">
+                <img src="/public/img/user-pic/22.png" alt="">
+                <img src="/public/img/user-pic/23.png" alt="">
+                <img src="/public/img/user-pic/24.png" alt="">
+            </div>
+            <div class="app-nav-btn col-xs-6 col-sm-6 col-md-6 hidden-lg text-right">
+                <span class="glyphicon glyphicon-th-list"></span>
+            </div>
+        </div>
+    </div>
+
+</header>
+{% block nav %}
+
+{% endblock %}
+<div class="app-nav hidden-lg">
+    <div>
+        <div class="app-close">
+            <span style="font-size: 36px;" class="glyphicon glyphicon-remove"></span>
+        </div>
+        <div style="margin: 5px;">
+            <a style="font-size: 20px; line-height: 60px;" href="/">
+                <img style="margin-right: 5px;" class="img-circle" width="50" height="50" src="/public/img/logo.jpg" alt="">HGQ
+            </a>
+        </div>
+        <hr>
+        <div style="margin-left: 20px;">
+            <a class="obj-block" href="/"><span class=" glyphicon glyphicon-home"></span> 首页</a>
+        </div>
+        <hr>
+        <div style="margin-left: 20px;">
+            <a class="obj-block" href="/contact"><span class="glyphicon glyphicon-comment"></span> 留言</a>
+        </div>
+        <hr>
+        <div style="margin-left: 20px;">
+            <a class="obj-block" href="/about"><span class="glyphicon glyphicon-link"></span> 关于我</a>
+        </div>
+        <hr>
+        {% if userInfo._id %}
+        <div class="userInfo text-center">
+            <img style="margin: 10px;" class="img-rounded" width="40" height="40" src="/public/img/logo.jpg" alt="">
+            <span class="username">{{userInfo.username}}</span>
+            {% if userInfo.isAdmin %}
+            <a href="/admin">进入后台管理</a>
+            {% else %}
+            {% endif %}
+            <a class="logout" style="color: red;" href="javascript:;">退出</a>
+        </div>
+        {% else %}
+        <div style="margin-top: 20px;" class="app-sign-btn text-center">
+            <button style="margin-right: 10px; line-height: 20px;" type="button" class="log-btn btn btn-danger"><span style="line-height: 20px;" class="glyphicon glyphicon-user"></span> 登录</button>
+            <button style="margin-left: 10px; line-height: 20px;" type="button" class="reg-btn btn btn-success"><span style="line-height: 20px;" class="glyphicon glyphicon-plus-sign"></span> 注册</button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="app-login hidden-lg">
+    <div class="app-close">
+        <span style="font-size: 36px;" class="glyphicon glyphicon-remove"></span>
+    </div>
+    <a style=" color: green; font-size: 20px;" class="app-switch">切换注册</a>
+    <h3 class="text-center">登录</h3>
+    <p>
+        <span class="icon glyphicon glyphicon-user"></span>
+        <input name="username" type="text" placeholder="请输入用户名" required>
+    </p>
+    <p>
+        <span class="icon glyphicon glyphicon-lock"></span>
+        <input name="password" type="password" placeholder="请输入密码" required>
+    </p>
+    <p>
+        <input class="login-btn" type="button" value="登录"></input>
+    </p>
+    <span style="color: red;" class="warning"></span>
+</div>
+<div class="app-register hidden-lg">
+    <div class="app-close">
+        <span style="font-size: 36px;" class="glyphicon glyphicon-remove"></span>
+    </div>
+    <a style=" color: red; font-size: 20px;" class="app-switch">切换登录</a>
+    <h3 class="text-center">注册</h3>
+    <p>
+        <span class="icon glyphicon glyphicon-user"></span>
+        <input name="username" type="text" placeholder="请输入用户名" required>
+    </p>
+    <p>
+        <span class="icon glyphicon glyphicon-lock"></span>
+        <input name="password" type="password" placeholder="请输入密码" required>
+    </p>
+    <p>
+        <span class="icon glyphicon glyphicon-retweet"></span>
+        <input name="repassword" type="password" placeholder="请再次输入密码" required>
+    </p>
+    <p>
+        <input id="register-btn" class="register-btn" type="button" value="注册"></input>
+    </p>
+    <span style="color: red;" class="warning"></span>
+</div>
+{% if userInfo._id %}
+{% else %}
+<div class="sign hidden-md hidden-sm hidden-xs">
+    <div class="login">
+        <div class="close">
+            <span class="glyphicon glyphicon-remove"></span>
+        </div>
+        <div class="switch"><span class="glyphicon glyphicon-hand-left" ></span> 切换注册</div>
+        <h3>登录</h3>
+        <p>
+            <span class="icon glyphicon glyphicon-user"></span>
+            <input name="username" type="text" placeholder="请输入用户名" required>
+        </p>
+        <p>
+            <span class="icon glyphicon glyphicon-lock"></span>
+            <input name="password" type="password" placeholder="请输入密码" required>
+        </p>
+        <p>
+            <input class="login-btn" type="button" value="登录"></input>
+        </p>
+        <span style="color: red;" class="warning"></span>
+    </div>
+    <div class="register">
+        <div class="close">
+            <span class="glyphicon glyphicon-remove"></span>
+        </div>
+        <div class="switch"><span class="glyphicon glyphicon-hand-left" ></span> 切换登录</div>
+        <h3>注册</h3>
+        <p>
+            <span class="icon glyphicon glyphicon-user"></span>
+            <input name="username" type="text" placeholder="请输入用户名" required>
+        </p>
+        <p>
+            <span class="icon glyphicon glyphicon-lock"></span>
+            <input name="password" type="password" placeholder="请输入密码" required>
+        </p>
+        <p>
+            <span class="icon glyphicon glyphicon-retweet"></span>
+            <input name="repassword" type="password" placeholder="请再次输入密码" required>
+        </p>
+        <p>
+            <input class="register-btn" type="button" value="注册"></input>
+        </p>
+        <span style="color: red;" class="warning"></span>
+    </div>
+</div>
+{% endif %}
+{% block banner %}{% endblock %}
+<div class="container">
+    {% block main %}{% endblock %}
+</div>
+<div class="top"></div>
+<footer class="footer container-fluid">
+    <p class="text-center">©2016 <a href="/">HGQ</a> . All Rights Reserved  <a href="http://www.miibeian.gov.cn/" target="_blank">鄂ICP备15011622号</a></p>
+</footer>
+
+</body>
+</html>

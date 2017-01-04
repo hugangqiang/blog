@@ -1,0 +1,158 @@
+{% extends 'layout.html' %}
+{% block nav %}
+{% endblock %}
+
+{% block main %}
+<div class="contact-title">
+    <h3 class="text-center">留言/反馈</h3>
+    <p>有什么话要吐槽的吗？这里是你畅所欲言的地方，可以咨询网站服务，可以交流，可以感叹，可以发飙，但不可以开车。<span>(有需要当网站管理员管理文章内容的也可以留言联系我)</span></p>
+</div>
+<div style=" position: relative;" class="contact-message">
+    {% if userInfo._id %}
+    <div style="height: 50px; position: absolute;" class="user-img obj-inline-block">
+        <img class="img-rounded" width="50" height="50" src="/public/img/user-pic/{{ userInfo.userImg }}.png" alt="">
+    </div>
+    <div style="height: 50px; position: relative; left: 60px;" class="user-name obj-inline-block">
+        <p style="line-height: 25px;">已登录：{{userInfo.username}}，<a class="logout" style="color: red;" href="javascript:;">注销？</a></p>
+        <p style="line-height: 25px;">
+            <span class="glyphicon glyphicon-hand-right"></span>
+            <span class="message-num"></span>
+        </p>
+    </div>
+    <script id="editor" type="text/plain" style="height:100px; width:100%; margin-top:10px;"></script>
+    <div style="margin-top: 10px; color: red;" class="text-left">
+        <span class="warning"></span>
+    </div>
+    <div class="text-right">
+        <button type="button" class="btn-message btn btn-primary">提交留言</button>
+    </div>
+    {% else %}
+    <div style="height: 50px; position: absolute;" class="user-img obj-inline-block">
+        <img class="img-rounded" width="50" height="50" src="/public/img/user-pic/0.png" alt="">
+    </div>
+    <div style="height: 50px; position: relative; left: 60px;" class="user-name obj-inline-block">
+        <p style="line-height: 25px;">欢迎新朋友你的到来！</p>
+        <p style="line-height: 25px;">
+            <span class="glyphicon glyphicon-hand-right"></span>
+            <span class="message-num"></span>
+        </p>
+    </div>
+    <textarea style="resize: none; margin-top: 10px;" disabled="disabled" class="form-control"  placeholder="您还没登录，请登录后留言！" id="message" rows="4"></textarea>
+    <div style="margin-top: 10px;" class="text-right">
+        <button type="button" class="btn btn-primary log">登录</button>
+    </div>
+    {% endif %}
+    <div style="margin-top: 30px;" class="panel panel-warning">
+        <div class="panel-heading">
+            <b>亲爱的朋友：</b>上面的信息框请您不要胡乱填写，尊重博主就等于尊重您自己，祝您每天都有一个好心情！
+        </div>
+    </div>
+    <div class="contact-message-content"></div>
+    {%include 'page.html'%}
+</div>
+<script src="/public/ueditor/ueditor.config.js"></script>
+<script src="/public/ueditor/ueditor.all.min.js"> </script>
+<script src="/public/ueditor/lang/zh-cn/zh-cn.js"> </script>
+<script>
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    var ue = UE.getEditor('editor');
+
+    function isFocus(e){
+        alert(UE.getEditor('editor').isFocus());
+        UE.dom.domUtils.preventDefault(e)
+    }
+    function setblur(e){
+        UE.getEditor('editor').blur();
+        UE.dom.domUtils.preventDefault(e)
+    }
+    function insertHtml() {
+        var value = prompt('插入html代码', '');
+        UE.getEditor('editor').execCommand('insertHtml', value)
+    }
+    function createEditor() {
+        enableBtn();
+        UE.getEditor('editor');
+    }
+    function getAllHtml() {
+        alert(UE.getEditor('editor').getAllHtml())
+    }
+    function getContent() {
+        var arr = [];
+        arr.push("使用editor.getContent()方法可以获得编辑器的内容");
+        arr.push("内容为：");
+        arr.push(UE.getEditor('editor').getContent());
+        return  arr.join("\n");
+    }
+    function getPlainTxt() {
+        var arr = [];
+        arr.push("使用editor.getPlainTxt()方法可以获得编辑器的带格式的纯文本内容");
+        arr.push("内容为：");
+        arr.push(UE.getEditor('editor').getPlainTxt());
+        alert(arr.join('\n'))
+    }
+    function setContent(isAppendTo) {
+        var arr = [];
+        arr.push("使用editor.setContent('欢迎使用ueditor')方法可以设置编辑器的内容");
+        UE.getEditor('editor').setContent('欢迎使用ueditor', isAppendTo);
+        alert(arr.join("\n"));
+    }
+    function setDisabled() {
+        UE.getEditor('editor').setDisabled('fullscreen');
+        disableBtn("enable");
+    }
+
+    function setEnabled() {
+        UE.getEditor('editor').setEnabled();
+        enableBtn();
+    }
+
+    function getText() {
+        //当你点击按钮时编辑区域已经失去了焦点，如果直接用getText将不会得到内容，所以要在选回来，然后取得内容
+        var range = UE.getEditor('editor').selection.getRange();
+        range.select();
+        var txt = UE.getEditor('editor').selection.getText();
+        alert(txt)
+    }
+
+    function getContentTxt() {
+        var arr = [];
+        arr.push("使用editor.getContentTxt()方法可以获得编辑器的纯文本内容");
+        arr.push("编辑器的纯文本内容为：");
+        arr.push(UE.getEditor('editor').getContentTxt());
+        alert(arr.join("\n"));
+    }
+    function hasContent() {
+        var arr = [];
+        arr.push("使用editor.hasContents()方法判断编辑器里是否有内容");
+        arr.push("判断结果为：");
+        arr.push(UE.getEditor('editor').hasContents());
+        alert(arr.join("\n"));
+    }
+    function setFocus() {
+        UE.getEditor('editor').focus();
+    }
+    function deleteEditor() {
+        disableBtn();
+        UE.getEditor('editor').destroy();
+    }
+    function disableBtn(str) {
+        var div = document.getElementById('btns');
+        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
+        for (var i = 0, btn; btn = btns[i++];) {
+            if (btn.id == str) {
+                UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
+            } else {
+                btn.setAttribute("disabled", "true");
+            }
+        }
+    }
+    function enableBtn() {
+        var div = document.getElementById('btns');
+        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
+        for (var i = 0, btn; btn = btns[i++];) {
+            UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
+        }
+    }
+</script>
+{% endblock %}

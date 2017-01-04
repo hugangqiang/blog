@@ -1,0 +1,173 @@
+{% extends 'layout.html' %}
+{% block nav %}
+<div class="container  hidden-md  hidden-xs hidden-sm marginT-20 " style="padding: 0 10px;">
+    <div class="index-content-nav" style=" height: 40px; position: relative; background: #428bca;">
+        {% for category in categories %}
+        <a style="display: block; padding: 10px; float: left; color: #fff;" href="/?category={{category.id}}">{{ category.name }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block main %}
+    <div class="index-content row">
+        <div style="padding: 0 10px;" class="col-lg-9">
+            <div class="bg-fff">
+                <div class="text-center">
+                    <h3 style="margin: 20px 0;">{{content.title}}</h3>
+                    <p style="color: #999;">
+                        <span style="margin-right: 20px;">{{ content.addTime|date('Y-m-d',-60*8) }}</span>
+                        <span style="margin-right: 20px;">分类：<a style="color: #999;" href="/?category={{ content.category.id }}">{{ content.category.name  }}</a></span>
+                        <span style="margin-right: 20px;">阅读（{{ content.views }}）</span>
+                        <span>评论（{{ content.comments.length }}）</span>
+                    </p>
+                    <hr style="margin: 30px 0;">
+                </div>
+                <div>{% autoescape false %}{{ content.content }}{% endautoescape %}</div>
+            </div>
+            <div style="padding: 20px; margin-top: 20px;" class="comment bg-fff">
+                <h4>评论</h4>
+                {% if userInfo._id %}
+                <script id="editor" type="text/plain" style="height:100px; width:100%; margin-top:10px;"></script>
+                <input type="hidden" name="contentId" value="{{content.id}}">
+                <div style="margin-top: 10px; color: red;" class="text-left">
+                    <span class="warning"></span>
+                </div>
+                <div class="text-right">
+                    <button type="button" class="btn-comment btn btn-primary">评论</button>
+                </div>
+                {% else %}
+                <textarea style="resize: none; margin-top: 10px;" disabled="disabled" class="form-control" placeholder="您还没登录，请登录后发表评论！" id="message" rows="4"></textarea>
+                <input type="hidden" name="contentId" value="{{content.id}}">
+                <div style="margin-top: 10px;" class="text-right">
+                    <button type="button" class=" btn btn-primary log">登录</button>
+                </div>
+                {% endif %}
+                <div style="margin-top: 30px;" class="panel panel-warning">
+                    <div class="panel-heading">
+                        <b>亲爱的朋友：</b>上面的信息框请您不要胡乱填写，尊重博主就等于尊重您自己，祝您每天都有一个好心情！
+                    </div>
+                </div>
+                <div class="messagelist"></div>
+                {%include 'page.html'%}
+            </div>
+        </div>
+        <div style="padding: 0 10px;"  class="col-lg-3 hidden-md  hidden-xs hidden-sm">
+            <div class="bg-fff">
+                <h4 style="margin-bottom: 20px;">最新发布</h4>
+                {% for news in news %}
+                <div>
+                    <p style="margin: 10px;"><a href="/view?contentid={{ news.id }}">{{ news.title }}</a></p>
+                    <span style="margin: 10px;">{{ news.addTime|date('Y/m/d',-60*8) }}</span>
+                    <hr>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+<script src="/public/ueditor/ueditor.config.js"></script>
+<script src="/public/ueditor/ueditor.all.min.js"> </script>
+<script src="/public/ueditor/lang/zh-cn/zh-cn.js"> </script>
+<script>
+    //实例化编辑器
+    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+    var ue = UE.getEditor('editor');
+
+    function isFocus(e){
+        alert(UE.getEditor('editor').isFocus());
+        UE.dom.domUtils.preventDefault(e)
+    }
+    function setblur(e){
+        UE.getEditor('editor').blur();
+        UE.dom.domUtils.preventDefault(e)
+    }
+    function insertHtml() {
+        var value = prompt('插入html代码', '');
+        UE.getEditor('editor').execCommand('insertHtml', value)
+    }
+    function createEditor() {
+        enableBtn();
+        UE.getEditor('editor');
+    }
+    function getAllHtml() {
+        alert(UE.getEditor('editor').getAllHtml())
+    }
+    function getContent() {
+        var arr = [];
+        arr.push("使用editor.getContent()方法可以获得编辑器的内容");
+        arr.push("内容为：");
+        arr.push(UE.getEditor('editor').getContent());
+        return  arr.join("\n");
+    }
+    function getPlainTxt() {
+        var arr = [];
+        arr.push("使用editor.getPlainTxt()方法可以获得编辑器的带格式的纯文本内容");
+        arr.push("内容为：");
+        arr.push(UE.getEditor('editor').getPlainTxt());
+        alert(arr.join('\n'))
+    }
+    function setContent(isAppendTo) {
+        var arr = [];
+        arr.push("使用editor.setContent('欢迎使用ueditor')方法可以设置编辑器的内容");
+        UE.getEditor('editor').setContent('欢迎使用ueditor', isAppendTo);
+        alert(arr.join("\n"));
+    }
+    function setDisabled() {
+        UE.getEditor('editor').setDisabled('fullscreen');
+        disableBtn("enable");
+    }
+
+    function setEnabled() {
+        UE.getEditor('editor').setEnabled();
+        enableBtn();
+    }
+
+    function getText() {
+        //当你点击按钮时编辑区域已经失去了焦点，如果直接用getText将不会得到内容，所以要在选回来，然后取得内容
+        var range = UE.getEditor('editor').selection.getRange();
+        range.select();
+        var txt = UE.getEditor('editor').selection.getText();
+        alert(txt)
+    }
+
+    function getContentTxt() {
+        var arr = [];
+        arr.push("使用editor.getContentTxt()方法可以获得编辑器的纯文本内容");
+        arr.push("编辑器的纯文本内容为：");
+        arr.push(UE.getEditor('editor').getContentTxt());
+        alert(arr.join("\n"));
+    }
+    function hasContent() {
+        var arr = [];
+        arr.push("使用editor.hasContents()方法判断编辑器里是否有内容");
+        arr.push("判断结果为：");
+        arr.push(UE.getEditor('editor').hasContents());
+        alert(arr.join("\n"));
+    }
+    function setFocus() {
+        UE.getEditor('editor').focus();
+    }
+    function deleteEditor() {
+        disableBtn();
+        UE.getEditor('editor').destroy();
+    }
+    function disableBtn(str) {
+        var div = document.getElementById('btns');
+        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
+        for (var i = 0, btn; btn = btns[i++];) {
+            if (btn.id == str) {
+                UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
+            } else {
+                btn.setAttribute("disabled", "true");
+            }
+        }
+    }
+    function enableBtn() {
+        var div = document.getElementById('btns');
+        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
+        for (var i = 0, btn; btn = btns[i++];) {
+            UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,359 @@
+body,ul,p,li,h1,h2,h3,h4,h5,h6{
+    margin: 0;
+    padding: 0;
+}
+ul{
+    list-style: none;
+}
+a{
+    text-decoration: none;
+    color: #606777;
+}
+a:hover{
+    text-decoration: none;
+}
+a:link{
+    text-decoration: none;
+}
+.obj-inline-block{
+    display: inline-block;
+}
+.obj-block{
+    display: block;
+}
+.bg-fff{
+    background: #fff;
+    padding: 15px;
+}
+.marginT-20{
+    margin-top: 20px;
+}
+.margin-20{
+    margin: 20px;
+}
+body{
+    font-family: "Microsoft YaHei", 微软雅黑, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    color: rgb(96, 103, 119);
+    background: #eeedeb;
+
+}
+.header{
+    height: 60px;
+    background: #fff;
+    z-index: 10;
+}
+.header .nav{
+    position: relative;
+    height: 60px;
+}
+.header .nav div{
+    height: 60px;
+}
+.header .nav div a{
+    display: block;
+    line-height: 60px;
+}
+.header .nav .userInfo img{
+    cursor: pointer;
+}
+.header .nav .userInfo a{
+    display: inline;
+}
+.header .nav .userImg{
+    background: #fff;
+    width: 250px;
+    height: 250px;
+    position: absolute;
+    right: 0;
+    top: 60px;
+    cursor: pointer;
+    z-index: 80;
+    display: none;
+}
+.header .nav .userImg img{
+    width: 50px;
+    height: 50px;
+    display: block;
+    float: left;
+
+}
+.header .nav .userImg img:hover{
+    border: 1px solid #e3e3e3;
+}
+.header .app-nav-btn span{
+    font-size: 36px;
+    margin-top: 12px;
+}
+.app-nav{
+    width: 100%;
+    background: #3c3c3c;
+    z-index: 100;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: none;
+}
+.app-nav *{
+    color: #fff;
+    font-size: 16px;
+}
+.app-nav a:hover{
+    color: #fff;
+}
+.app-close{
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 20px;
+}
+.app-nav hr{
+    border: 1px solid #666;
+    margin: 10px 0;
+}
+.app-nav div{
+    overflow: auto;
+}
+.app-login,
+.app-register{
+    width: 100%;
+    background: #3c3c3c;
+    z-index: 102;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 20px;
+    display: none;
+}
+.app-register *,
+.app-login *{
+    color: #fff;
+    font-size: 16px;
+}
+.app-login h3,
+.app-register h3{
+    font-size: 36px;
+    margin: 40px 0 20px;
+}
+.app-login p,
+.app-register p{
+    position: relative;
+}
+.app-login .icon,
+.app-register .icon{
+    position: absolute;
+    right: 10px;
+    top: 30px;
+    color: #333;
+    font-size: 20px;
+}
+.app-login input,
+.app-register input{
+    outline: none;
+    margin: 20px 0;
+    width: 100%;
+    height: 40px;
+    color: #333;
+    padding-left: 5px;
+}
+.app-login .login-btn{
+    border: none;
+    background: red;
+    color: #fff;
+}
+.app-register .register-btn{
+    border: none;
+    background: green;
+    color: #fff;
+}
+.sign{
+    width: 400px;
+    height: 400px;
+    background: #fff;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    display: none;
+    -webkit-perspective: 800px;
+    -moz-perspective: 800px;
+    -ms-perspective: 800px;
+    -o-perspective: 800px;
+    perspective: 800px;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -ms-transform-style: preserve-3d;
+    -o-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+.sign .login,
+.sign .register{
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 50px 50px 40px 50px;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+.sign .register{
+    -webkit-transform: rotateY(-180deg);
+    -moz-transform: rotateY(-180deg);
+    -ms-transform: rotateY(-180deg);
+    -o-transform: rotateY(-180deg);
+    transform: rotateY(-180deg);
+}
+.sign .login .switch,
+.sign .register .switch{
+    cursor: pointer;
+    display: inline-block;
+}
+.sign .close{
+    width: 50px;
+    height: 50px;
+    background: #444;
+    text-align: center;
+    line-height: 50px;
+    border-radius: 0 0 50px 50px;
+    position: absolute;
+    top: 0;
+    right: 25px;
+    opacity: 1;
+}
+.sign .close span{
+    color: #fff;
+    font-size: 12px;
+    -webkit-transition: 1s;
+    -moz-transition: 1s;
+    -ms-transition: 1s;
+    -o-transition: 1s;
+    transition: 1s;
+}
+.sign .close span:hover{
+    -webkit-transform: rotateZ(360deg);
+    -moz-transform: rotateZ(360deg);
+    -ms-transform: rotateZ(360deg);
+    -o-transform: rotateZ(360deg);
+    transform: rotateZ(360deg);
+}
+.sign h3{
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+.sign p{
+    width: 300px;
+    height: 40px;
+    margin: 15px auto;
+    position: relative;
+}
+.sign input{
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.sign .login-btn,
+.sign .register-btn{
+    background: #457DB1;
+    color: #fff;
+}
+.sign .login-btn:hover,
+.sign .register-btn:hover{
+    opacity: 0.8;
+}
+.sign .icon{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: rgba(0,0,0,.3);
+    font-size: 20px;
+}
+.linkLogo{
+    display: inline-block;
+}
+.linkLogo p{
+    display: inline-block;
+}
+.linkLogo img{
+    width: 45px;
+    height: 45px;
+    border-radius: 100%;
+}
+.index-content-nav a:hover{
+    background: #00a2d4;
+}
+.index-content{
+    margin-top: 20px;
+}
+
+.contact-title{
+    background: #fff;
+    margin-top: 20px;
+    padding: 10px;
+}
+.contact-title h3{
+    font-size: 24px;
+    margin: 20px auto;
+}
+.contact-title p{
+    font-size: 16px;
+    line-height: 30px;
+}
+.contact-title p span{
+    font-size: 14px;
+}
+.contact-message {
+    background: #fff;
+    margin-top: 20px;
+    padding: 20px;
+}
+.about{
+    background: #fff;
+    margin-top: 20px;
+    padding: 20px;
+}
+.about .about-title{
+    padding: 20px 0;
+}
+.about .about-img .img-circle{
+    width: 80px;
+    height: 80px;
+    margin-top: -40px;
+}
+.about .row img{
+    width: 100%;
+}
+.top {
+    width: 40px;
+    height: 40px;
+    padding: 3px;
+    border-radius: 40px;
+    box-shadow: 0px 1px 8px 1.5px rgba(0, 0, 0, 0.35), 0px 20px 70px 8px rgba(0, 0, 0, 0.25);
+    background: url("/public/img/top.png");
+    background-size: contain;
+    background-origin: content-box;
+    transition: 300ms;
+    cursor: pointer;
+    display: none;
+    position: fixed;
+    right: 30px;
+    bottom: 70px;
+}
+.top:hover{
+    border-radius: 0;
+    transform: rotateZ(360deg);
+}
+.footer{
+    height: 60px;
+    background: #fff;
+    margin-top: 40px;
+}
+.footer p{
+    font-size: 14px;
+    margin-top: 15px;
+}
