@@ -1,0 +1,57 @@
+{% extends './layout.html' %}
+{% block seo %}
+<title>账号恢复-前端博客</title>
+{% endblock %}
+{% block style %}
+<style>
+	#header{
+		display: none;
+	}
+	.f-copy{
+		display: none;
+	}
+</style>
+{% endblock %}
+{% block main %}
+	<div class="findpass" style="margin: auto;">
+		<h2>忘记密码？</h2>
+		<p>请输入您的用户名，以便我们识别你的身份。</p>
+		<p><input type="text" name="username" placeholder="请输入英文用户名"></p>
+		<p><button class="btn">下一步</button></p>
+		<span class="warning"></span>
+		<p><a href="/">返回首页</a></p>
+	</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+	$('.findpass .btn').on('click', function(){
+		let userName = $('.findpass').find('[name = username]').val();
+        if(userName == '' ){
+            $('.findpass .warning').html('用户名不能为空！');
+            return;
+        }
+        let reg = /[a-zA-Z]/;
+        if( !reg.test(userName )){
+            $('.findpass .warning').html('请输入英文用户名！');
+            return;
+        }
+        $.ajax({
+            type: 'post',
+            url: '/api/user/findpass',
+            data: {
+                userName: userName
+            },
+            dataType: 'json',
+            success: function (result) {
+                $('.findpass .warning').html( result.message );
+                if( !result.code ){
+                    //登录成功
+                    console.log(1)
+                }
+            }
+        });
+	})
+</script>
+{% endblock %}

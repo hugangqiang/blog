@@ -1,79 +1,182 @@
-{% extends 'layout.html' %}
-{% block nav %}
-<div class="container  hidden-md  hidden-xs hidden-sm marginT-20" style="padding: 0 10px;">
-    <div class="index-content-nav" style=" height: 40px; position: relative; background: #428bca;">
-        {% for category in categories %}
-        <a style="display: block; padding: 10px; float: left; color: #fff;" href="/?category={{category.id}}">{{ category.name }}</a>
-        {% endfor %}
-    </div>
-</div>
+{% extends './layout.html' %}
+
+{% block seo %}
+<title>胡钢强-前端博客</title>
+<meta name="description" content="胡钢强，一个前端菜鸟的博客，疯狂的代码可以创造所有，记录从一个菜鸟到老鸟的过程。">
 {% endblock %}
+
 {% block main %}
-    <div class="index-content row">
-        <div style="padding: 0 10px;" class="col-lg-9">
-            <div class="bg-fff">
-                {% for content in contents %}
-                <div>
-                    <h3 style="margin-top: 15px; font-size: 24px;"><a href="/view?contentid={{ content.id }}">{{ content.title }}</a></h3>
-                    <p style="margin-top: 15px; font-size: 14px;">
-                        {{ content.description }}
-                        <a href="/?category={{ content.category.id }}"><span class="label label-primary">{{ content.category.name  }}</span></a>
-                    </p>
-                    <div style="margin-top: 10px; font-size: 14px;">
-                        <img class="img-circle" width="20" height="20" src="/public/img/user-pic/{{ content.userImg }}.png" alt="">
-                        <span style="margin-right: 10px;">{{ content.user }}</span>
-                        <span style="margin-right: 10px;">{{ content.addTime|date('Y-m-d',-60*8) }}</span>
-                        <span style="margin-right: 5px;" class="glyphicon glyphicon-eye-open"></span>
-                        <span style="margin-right: 10px;">{{ content.views }}</span>
-                        <span style="margin-right: 5px;" class="glyphicon glyphicon-comment"></span>
-                        <span>{{ content.comments.length }}</span>
-                    </div>
-                    <hr>
-                </div>
-                {% endfor %}
-                <nav>
-                    <ul class="pager pages">
-                        {% if page <= 1 %}
-                        <li style="display:none;" class="previous"><a href="/?page={{ page-1 }}">&larr; 上一页</a></li>
-                        {% else %}
-                        <li class="previous"><a href="/?page={{ page-1 }}">&larr; 上一页</a></li>
-                        {% endif %}
-                        <li>一共有{{count}}条数据，每页显示{{limit}}条数据， 一共{{pages}}页， 当前第{{page}}页</li>
-                        {% if page >= pages %}
-                        <li  style="display:none;"  class="next"><a href="/?page={{ page+1 }}">下一页 &rarr;</a></li>
-                        {% else %}
-                        <li class="next"><a href="/?page={{ page+1 }}">下一页 &rarr;</a></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <div style="padding: 0 10px;"  class="col-lg-3 hidden-md  hidden-xs hidden-sm">
-            <div class="bg-fff">
-                <h4 style="margin-bottom: 20px;">最新发布</h4>
-                {% for news in news %}
-                <div>
-                    <p style="margin: 10px;"><a href="/view?contentid={{ news.id }}">{{ news.title }}</a></p>
-                    <span style="margin: 10px;">{{ news.addTime|date('Y-m-d',-60*8) }}</span>
-                    <hr>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="bg-fff marginT-20">
-                <h4 style="margin-bottom: 20px;">最新留言</h4>
-                <div class="messageNew"></div>
-            </div>
-            <div class="bg-fff marginT-20">
-                <h4 style="margin-bottom: 20px;">友链</h4>
-                {% for link in links %}
-                <div style="margin:0 0 10px 5px; width: 50px; " class="obj-inline-block text-center">
-                    <a href="{{ link.href }}" target="_blank" >
-                        <div class="linkLogo">{% autoescape false %}{{ link.logo }}{% endautoescape %}</div>
-                        <span>{{ link.name }}</span>
-                    </a>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+<!-- Main -->
+<div id="main">
+
+	<!-- Post -->
+	{% for content in contents %}
+	<article class="post clearfix">
+		{% if content.titleImg %}
+		<div class="title-img">
+			<a class="image" href="/v/{{ content._id }}" target="_blank"><img src="{{ content.titleImg }}" alt="{{content.title }}"></a>
+		</div>
+		<div class="title-con">
+			<div class="title">
+				<h3><a href="/v/{{ content._id }}" target="_blank">{{ content.title }}</a></h3>
+			</div>
+			<div class="description">
+				<p>{{ content.description | truncate(80,false,'...', 0) }}</p>
+			</div>
+			<div class="meta">
+				<span class="user-img">
+					<img src="{{content.userImg}}" alt="">
+				</span>
+				<span class="user">{{content.user}}</span>
+				<time class="published">{{ content.addTime.toString() | date }}</time>
+				<span class="views">
+					<i class="fa fa-eye"></i>{{ content.views }}
+				</span>
+				<span class="comments">
+					<i class="fa fa-comments-o"></i>{{ content.comments.length }}
+				</span>
+			</div>
+		</div>
+		{% else %}
+		<div class="title">
+			<h3><a href="/v/{{ content._id }} " target="_blank">{{ content.title }}</a></h3>
+		</div>
+		<div class="description">
+			<p>{{ content.description | truncate(50,false,'...', 0) }}</p>
+		</div>
+		<div class="meta">
+			<span class="user-img">
+				<img src="{{content.userImg}}" alt="">
+			</span>
+			<span class="user">{{content.user}}</span>
+			<time class="published">{{ content.addTime.toString() | date }}</time>
+			<span class="views">
+				<i class="fa fa-eye"></i>{{ content.views }}
+			</span>
+			<span class="comments">
+				<i class="fa fa-comments-o"></i>{{ content.comments.length }}
+			</span>
+		</div>
+		{% endif %}
+</article>
+{% endfor %}
+
+<!-- Pagination --> 
+<div class="pages">
+	<div id="pages" class="clearfix"></div>
+</div>
+
+</div>
+
+<!-- Sidebar -->
+<section id="sidebar">
+
+	<!-- Intro -->
+	<section id="intro">
+		<a href="#" class="logo"><img src="/public/images/logo.jpg" alt="" /></a>
+		<header>
+			<h2>Dream </h2>
+			<p>js会让明天完美！前端bug整理库</p>
+		</header>
+	</section>
+
+	<!-- Mini Posts -->
+	<section>
+		<div class="mini-posts">
+			{% for laud in lauds %}
+			<article class="mini-post">
+				<div class="con">
+					<h3 class="title">
+						<a href="/v/{{laud._id}}" target="_blank">{{ laud.title }}</a>
+					</h3>
+					<div class="description">
+						<p>{{ laud.description | truncate(30,false,'...', 0) }}</p>
+					</div>
+					<div class="meta">
+						<span class="user-img">
+							<img src="{{laud.userImg}}" alt="">
+						</span>
+						<span class="user">{{laud.user}}</span>
+						<span class="views">
+							<i class="fa fa-eye"></i>{{ laud.views }}
+						</span>
+						<span class="comments">
+							<i class="fa fa-comments-o"></i>{{ laud.comments.length }}
+						</span>
+					</div>
+				</div>
+				
+				{% if laud.titleImg %}
+				<div class="title-img">
+					<a href="/v/{{laud._id}}" target="_blank" class="image">
+						<img src="{{laud.titleImg}}" alt="">
+					</a>
+				</div>
+				{% endif %}
+			</article>
+
+			{% endfor %}
+		</div>
+	</section>
+
+	<!-- Posts List -->
+	<section>
+		<ul class="posts">
+			{% for message in messageNews %}
+			<li>
+				<div class="comment clearfix">
+					<div class="comment-img">
+						<img class="userRad" src="{{message.userImg}}" alt="">
+					</div>
+					<div class="comment-content">
+						<div class="comment-name">
+							<span>{{ message.user }}</span>
+						</div>
+						<div class="comment-mes">{{ message.message | safe }}</div>
+					</div>
+				</div>
+			</li>
+			{% endfor %}
+		</ul>
+	</section>
+	<section class="blurb">
+		<h3>ABOUT</h3>
+		<p>一只平凡菜鸟，每天不断在各种坑中跳来跳去。</p>
+		<a href="/message"><button>留言</button></a>
+	</section>
+	<section id="footer">
+		<ul class="icons">
+			<li><a href="https://github.com/hugangqiang"  target="_blank" class="fa-github"><span class="label">github</span></a></li>
+			<li>
+				<a href="javascript"  class="fa-qq"><span class="label">QQ</span></a>
+				<div class="qrCode">
+					<div class="img">
+						<img src="/public/images/webqq.jpg" alt="">
+					</div>
+				</div>
+			</li>
+			<li><a href="https://www.facebook.com/hugangqiang"  target="_blank" class="fa-facebook"><span class="label">facebook</span></a></li>
+			<li><a href="https://twitter.com/hugangqiang"  target="_blank" class="fa-twitter"><span class="label">twitter</span></a></li>
+		</ul>
+	</section>
+</section>
+{% endblock %}
+{% block script %}
+<script>
+	$('#pages').pagings({
+	    initPageNo: {{page}}, // 初始页码
+	    totalPages: {{pages}}, //总页数
+	    totalCount: '', // 条目总数
+	    slideSpeed: 600, // 缓动速度。单位毫秒 
+	    callback: function(page) { // 回调函数 
+	    	$.ajax({
+	    		type: 'post',
+	    		url: '/api/pageAjax',
+	    		success: function(res){
+	    			window.location.href = '/?page='+page;
+	    		}
+	    	})
+	    }
+	})
+</script>
 {% endblock %}

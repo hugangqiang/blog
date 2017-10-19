@@ -1,0 +1,112 @@
+{% extends './layout.html' %}
+{% block style %}
+<style>
+    
+    .form-box{
+        margin-bottom: 50px;
+    }
+    .info span{
+        margin-right: 10px;
+    }
+    .warning{
+        font-size: 12px;
+        color: red;
+        margin: 10px 0;
+        padding: 0;
+    }
+</style>
+{% endblock %}
+{% block main %}
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="/admin">管理首页</a></li>
+        <li><span>留言回复</span></li>
+    </ol>
+    <h3 style="margin-bottom: 20px;">留言回复</h3>
+    <div class="form-box">
+        <div class="form-group">
+            <div class="info">
+                <span>留言名：{{message.user}}</span>
+                <span>留言邮箱：{{message.email}}</span>
+                <span>留言地址：{{message.ip.cname}}</span>
+                <span>留言时间：{{ message.addTime | date }}</span>
+            </div>
+            <div style="margin-top: 10px; border-top: 1px solid #ddd;">{{message.message | safe}}</div>
+        </div>
+        <div id="editor"></div>
+        <div class="form-group" style="margin-top: 20px;">
+            <button type="button" class="btn btn-default">保存</button>
+            <p class="warning"></p>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script src="/public/assets/js/wangEditor.min.js"></script>
+<script>
+    let E = window.wangEditor;
+    let editor = new E('#editor');
+    editor.customConfig.zIndex = 10;
+    // 配置服务器端地址
+    editor.customConfig.uploadImgServer = '/api/upload/img';
+    editor.customConfig.uploadImgHooks = {
+        customInsert: function (insertImg, result, editor) {
+            let url = '/public/images/upload/'+result.message;
+            insertImg(url)
+        }
+    };
+    // 自定义菜单配置
+    editor.customConfig.menus = [
+        'head',  // 标题
+        'bold',  // 粗体
+        'italic',  // 斜体
+        'underline',  // 下划线
+        'foreColor',  // 文字颜色
+        'link',  // 插入链接
+        'list',  // 列表
+        'justify',  // 对齐方式
+        'quote',  // 引用
+        'emoticon',  // 表情
+        'image',  // 插入图片
+        'video',  // 插入视频
+        'code'  // 插入代码
+    ];
+    editor.create();
+    $('.form-box .btn').on('click',function(){
+        $('.form-box .warning').html('');
+        
+        let reply = editor.txt.html();
+
+        if(editor.txt.text() == '' ){
+            $('.form-box .warning').html('内容不能为空！');
+            return;
+        }
+        $.ajax({
+            type: 'post',
+            url: '/admin/message/reply',
+            data: {
+                id: "{{message._id}}",
+                reply: reply
+            },
+            dataType: 'json',
+            success: function (result) {
+                $('.form-box .warning').html( result.message );
+                if( !result.code ){
+                    H.modal({
+                        title: "提示",
+                        message: "回复成功！",
+                        btnok: "留言列表",
+                        btncl: "",
+                        okFn: function(){
+                            window.location.href = '/admin/message';
+                        }
+                    })
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,38 +1,425 @@
-{% extends 'layout.html' %}
+{% extends './layout.html' %}
+{% block style %}
+<style>
+    .table img{
+        width: 40px;
+        height: 40px;
+    }
+    .page{
+        position: relative;
+        text-align: center;
+    }
+    .pages {
+        display: inline-block;
+        margin-top: 2em;
+    }
+    .pages button {
+        padding: 0 10px;
+        margin: 0 10px;
+        height: 40px;
+        line-height: 40px;
+        float: left;
+        cursor: pointer;
+        background-color: #ffffff;
+        font-weight: 500;
+        border: 1px solid #ddd;
+    }
+    .pages button:focus {
+        outline: none;
+    }
+    .pages .first-page,
+    .pages .last-page {
+        margin: 0;
+    }
+    .pages .pageWrap {
+        height: 40px;
+        float: left;
+        overflow: hidden;
+    }
+    .pages .pageWrap ul {
+        width: 100000px;
+        height: 40px;
+        float: left;
+        list-style: none; 
+        margin: 0;
+        padding-left: 0em;
+    }
+    .pages .pageWrap ul li {
+        list-style: none;
+        width: 60px;
+        height: 40px;
+        border: 1px solid #ebebeb;
+        line-height: 40px;
+        box-sizing: border-box;
+        cursor: pointer;
+        float: left;
+        padding-left: 0em;
+        -webkit-user-select: none; 
+        -moz-user-select: none;
+        -ms-user-select: none; 
+        user-select: none;
+    }
+    .pages .pageWrap ul .sel-page {
+        background-color: #2ebaae;
+        color: #fff;
+    }
+    .pages .jump-text {
+        width: 60px;
+        height: 40px;
+        box-sizing: border-box;
+        text-align: center;
+        margin: 0 5px;
+        float: left;
+    }
+    .pages .jump-button {
+        margin: 0;
+        float: left;
+    }
+    .pages .total-pages,
+    .pages .total-count {
+        margin-left: 10px;
+        float: left;
+        font-size: 14px;
+    }
 
+</style>
+{% endblock %}
 {% block main %}
 <ol class="breadcrumb">
     <li><a href="/admin">管理首页</a></li>
     <li><span>用户列表</span></li>
 </ol>
+
 <h3>用户列表</h3>
-{%include 'page.html'%}
-<table class="table table-hover table-striped">
-    <tr>
-        <th>ID</th>
-        <th>用户图标</th>
-        <th>用户名</th>
-        <th>密码</th>
-        <th>是否是管理员</th>
-        <th>编辑</th>
-    </tr>
-    {% for user in users %}
-    <tr>
-        <td>{{ user._id.toString() }}</td>
-        <td>{{ user.userImg }}</td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.password }}</td>
-        <td>
-            {% if user.isAdmin %}是{% endif %}
-        </td>
-        <td>
-            <a href="/admin/user/edit?id={{ user._id.toString() }}">修改</a>
-            <a href="/admin/user/del?id={{ user._id.toString() }}">删除</a>
-        </td>
-    </tr>
-    {% endfor %}
+<table class="table table-hover table-striped" id="user">
+    <thead>
+        <tr>
+            <th>用户图标</th>
+            <th>用户名</th>
+            <th>用户邮箱</th>
+            <th>用户权限</th>
+            <th>注册时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
 </table>
+<div class="page">
+    <div id="userPages" class="pages"></div>
+</div>
+<h3>Github用户列表</h3>
+<table class="table table-hover table-striped" id="github">
+    <thead>
+        <tr>
+            <th>用户图标</th>
+            <th>用户名</th>
+            <th>用户邮箱</th>
+            <th>用户权限</th>
+            <th>注册时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="page">
+    <div id="githubPages" class="pages"></div>
+</div>
+<h3>QQ用户列表</h3>
+<table class="table table-hover table-striped" id="qq">
+    <thead>
+        <tr>
+            <th>用户图标</th>
+            <th>用户名</th>
+            <th>性别</th>
+            <th>省份</th>
+            <th>用户权限</th>
+            <th>注册时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="page">
+    <div id="qqPages" class="pages"></div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    $('#user .del').on('click',function(){
+        let id= $(this).attr('_id');
+        H.modal({
+            title: "删除",
+            message: "是否删除？",
+            btnok: "删除",
+            btncl: "取消",
+            okFn: function(){
+                $.ajax({
+                    type: 'get',
+                    url: '/admin/user/del',
+                    data: {
+                        id: id
+                    },
+                    success: function (result) {
+                        if( !result.code ){
+                            H.modal({
+                                title: "提示",
+                                message: "删除成功！",
+                                btnok: "确定",
+                                btncl: "",
+                                okFn: function(){
+                                    window.location.reload();
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        })
 
-{%include 'page.html'%}
+    })
+    $('#github .del').on('click',function(){
+        let id= $(this).attr('_id');
+        H.modal({
+            title: "删除",
+            message: "是否删除？",
+            btnok: "删除",
+            btncl: "取消",
+            okFn: function(){
+                $.ajax({
+                    type: 'get',
+                    url: '/admin/userGit/del',
+                    data: {
+                        id: id
+                    },
+                    success: function (result) {
+                        if( !result.code ){
+                            H.modal({
+                                title: "提示",
+                                message: "删除成功！",
+                                btnok: "确定",
+                                btncl: "",
+                                okFn: function(){
+                                    window.location.reload();
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        })
 
+    })
+    $('#qq .del').on('click',function(){
+        let id= $(this).attr('_id');
+        H.modal({
+            title: "删除",
+            message: "是否删除？",
+            btnok: "删除",
+            btncl: "取消",
+            okFn: function(){
+                $.ajax({
+                    type: 'get',
+                    url: '/admin/userQq/del',
+                    data: {
+                        id: id
+                    },
+                    success: function (result) {
+                        if( !result.code ){
+                            H.modal({
+                                title: "提示",
+                                message: "删除成功！",
+                                btnok: "确定",
+                                btncl: "",
+                                okFn: function(){
+                                    window.location.reload();
+                                }
+                            })
+                        }
+                    }
+                })
+            }
+        })
+
+    })
+    //分页
+    function date(str,style) {
+        let date = new Date(str);
+        function p(s) {
+            return s < 10 ? '0' + s: s;
+        }
+        if( style == "文字" ){
+            return date.getFullYear() + '年' + p((date.getMonth() + 1)) + '月' + p(date.getDate()) + '日  ' + p(date.getHours()) + ':' + p(date.getMinutes()) + ':' + p(date.getSeconds());
+        }else{
+            return date.getFullYear() + '-' + p((date.getMonth() + 1)) + '-' + p(date.getDate()) + '  ' + p(date.getHours()) + ':' + p(date.getMinutes()) + ':' + p(date.getSeconds());
+        }
+    }
+
+    function user(){
+        let prepage = 10;
+        let page = 1;
+        let pages = 0;
+        let users = [];
+        {% for user in users %}
+            users.push({
+                _id: '{{user._id}}',
+                userName: '{{user.userName}}',
+                userImg: '{{user.userImg}}',
+                userEmail: '{{user.userEmail}}',
+                isAdmin: '{{user.isAdmin}}',
+                addTime: date('{{user.addTime}}')
+            });
+        {% endfor %}
+        users.reverse();
+        function renderUser() {
+            
+            pages = Math.max(Math.ceil(users.length / prepage),1);
+            let start = Math.max(0, (page-1) * prepage);
+            let end = Math.min(start + prepage, users.length);
+            let html = '';
+            for(let i=start; i<end; i++){
+                let isAdmin = '用户';
+                if( users[i].isAdmin == 'admin'  ){
+                    isAdmin = '管理员';
+                }
+                html += `<tr>
+                            <td><img src="${ users[i].userImg }" alt=""></td>
+                            <td>${ users[i].userName }</td>
+                            <td>${ users[i].userEmail }</td>
+                            <td>${ isAdmin }</td>
+                            <td>${ users[i].addTime }</td>
+                            <td>
+                                <a class="btn btn-primary btn-xs edit" href="/admin/user/edit?id=${ users[i]._id }">修改</a>
+                                <a class="btn btn-danger btn-xs del" _id="${ users[i]._id }">删除</a>
+                            </td>
+                        </tr>`;
+            }
+            $('#user tbody').html(html);
+        }
+        renderUser();
+        $('#userPages').paging({
+            initPageNo: page, // 初始页码
+            totalPages: pages, //总页数
+            totalCount: '', // 条目总数
+            slideSpeed: 600, // 缓动速度。单位毫秒 
+            callback: function(_page) { // 回调函数 
+                page = _page;
+                renderUser();
+            }
+        })
+    };
+    function github(){
+        let prepage = 10;
+        let page = 1;
+        let pages = 0;
+        let githubs = [];
+        {% for github in githubs %}
+            githubs.push({
+                _id: '{{github._id}}',
+                userName: '{{github.userName}}',
+                userEmail: '{{github.userEmail}}',
+                userImg: '{{github.userImg}}',
+                isAdmin: '{{github.isAdmin}}',
+                addTime: date('{{github.addTime}}')
+            });
+        {% endfor %}
+        githubs.reverse();
+        function renderGithub() {
+            
+            pages = Math.max(Math.ceil(githubs.length / prepage),1);
+            let start = Math.max(0, (page-1) * prepage);
+            let end = Math.min(start + prepage, githubs.length);
+            let html = '';
+            for(let i=start; i<end; i++){
+                let isAdmin = '用户';
+                if( githubs[i].isAdmin == 'admin'  ){
+                    isAdmin = '管理员';
+                }
+                html += `<tr>
+                            <td><img src="${ githubs[i].userImg }" alt=""></td>
+                            <td>${ githubs[i].userName }</td>
+                            <td>${ githubs[i].userEmail }</td>
+                            <td>${ isAdmin }</td>
+                            <td>${ githubs[i].addTime }</td>
+                            <td>
+                                <a class="btn btn-primary btn-xs edit" href="/admin/userGit/edit?id=${ githubs[i]._id }">修改</a>
+                                <a class="btn btn-danger btn-xs del" _id="${ githubs[i]._id }">删除</a>
+                            </td>
+                        </tr>`;
+            }
+            $('#github tbody').html(html);
+        }
+        renderGithub();
+        $('#githubPages').paging({
+            initPageNo: page, // 初始页码
+            totalPages: pages, //总页数
+            totalCount: '', // 条目总数
+            slideSpeed: 600, // 缓动速度。单位毫秒 
+            callback: function(_page) { // 回调函数 
+                page = _page;
+                renderGithub();
+            }
+        })
+    };
+    function qq(){
+        let prepage = 10;
+        let page = 1;
+        let pages = 0;
+        let qqs = [];
+        {% for qq in qqs %}
+            qqs.push({
+                _id: '{{qq._id}}',
+                userName: '{{qq.userName}}',
+                province: '{{qq.province}}',
+                gender: '{{qq.gender}}',
+                userImg: '{{qq.userImg}}',
+                isAdmin: '{{qq.isAdmin}}',
+                addTime: date('{{qq.addTime}}')
+            });
+        {% endfor %}
+        qqs.reverse();
+        function renderQq() {
+            
+            pages = Math.max(Math.ceil(qqs.length / prepage),1);
+            let start = Math.max(0, (page-1) * prepage);
+            let end = Math.min(start + prepage, qqs.length);
+            let html = '';
+            for(let i=start; i<end; i++){
+                let isAdmin = '用户';
+                if( qqs[i].isAdmin == 'admin'  ){
+                    isAdmin = '管理员';
+                }
+                html += `<tr>
+                            <td><img src="${ qqs[i].userImg }" alt=""></td>
+                            <td>${ qqs[i].userName }</td>
+                            <td>${ qqs[i].gender }</td>
+                            <td>${ qqs[i].province }</td>
+                            <td>${ isAdmin }</td>
+                            <td>${ qqs[i].addTime }</td>
+                            <td>
+                                <a class="btn btn-primary btn-xs edit" href="/admin/userQq/edit?id=${ qqs[i]._id }">修改</a>
+                                <a class="btn btn-danger btn-xs del" _id="${ qqs[i]._id }">删除</a>
+                            </td>
+                        </tr>`;
+            }
+            $('#qq tbody').html(html);
+        }
+        renderQq();
+        $('#qqPages').paging({
+            initPageNo: page, // 初始页码
+            totalPages: pages, //总页数
+            totalCount: '', // 条目总数
+            slideSpeed: 600, // 缓动速度。单位毫秒 
+            callback: function(_page) { // 回调函数 
+                page = _page;
+                renderQq();
+            }
+        })
+    };
+    user();
+    github();
+    qq();
+</script>
 {% endblock %}

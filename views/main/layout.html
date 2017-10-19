@@ -1,226 +1,197 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,user-scalable=no" />
-    <title>博客</title>
-    <link rel="stylesheet" href="/public/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="/public/css/main.css" type="text/css">
-    <script src="/public/js/jquery-2.1.4.min.js"></script>
-    <script src="/public/js/bootstrap.min.js"></script>
-    <script src="/public/js/main.js"></script>
+    {% block seo %}{% endblock %}
+    <meta name="keywords" content="胡钢强，前端博客，hugangqiang,个人博客，前端资料，前端学习，前端，nodejs，javascript,神建站，gangqianghu">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/public/images/favicon.ico" />
+    <!--[if lte IE 8]><script src="/public/assets/js/ie/html5shiv.js"></script><![endif]-->
+    <link rel="stylesheet" href="/public/assets/css/main.css" />
+    <!--[if lte IE 9]><link rel="stylesheet" href="/public/assets/css/ie9.css" /><![endif]-->
+    <!--[if lte IE 8]><link rel="stylesheet" href="/public/assets/css/ie8.css" /><![endif]-->
+    {% block style %}{% endblock %}
 </head>
 <body>
-<header class="header">
-    <div class="container">
-        <div class="nav row">
-            <div class=" col-lg-2 col-md-6 col-sm-6 col-xs-6 text-left">
-                <a href="/">
-                    <img class="img-circle" width="58" height="58" src="/public/img/logo.jpg" alt=""> HGQ
-                </a>
-            </div>
-            <div class="active col-lg-1 hidden-md hidden-xs hidden-sm text-center">
-                <a href="/"><span class=" glyphicon glyphicon-home"></span> 首页</a>
-            </div>
-            <div class=" col-lg-1 hidden-md hidden-xs hidden-sm  text-center">
-                <a href="/contact"><span class="glyphicon glyphicon-comment"></span> 留言</a>
-            </div>
-            <div class=" col-lg-1 hidden-md hidden-xs hidden-sm  text-center">
-                <a href="/about"><span class="glyphicon glyphicon-link"></span> 关于我</a>
-            </div>
-            <!--<div class=" col-lg-1 hidden-md hidden-xs hidden-sm  text-center">-->
-                <!--<a href="/serve"><span class="glyphicon glyphicon-globe"></span> 服务</a>-->
-            <!--</div>-->
-            <div class="col-lg-4  col-lg-offset-3 col-md-offset-3 hidden-md hidden-xs hidden-sm text-right">
+
+<!-- Wrapper -->
+<div id="wrapper">
+    <!-- Header -->
+    <header id="header">
+        <h1><a href="/">hu Gangqiang</a></h1>
+        <nav class="links">
+            <ul>
+                <li><a href="/">生活与Bug</a></li>
+                <li><a href="/message">联系</a></li>
+                <!-- <li><a href="/about">关于</a></li> -->
+            </ul>
+        </nav>
+        <nav class="main">
+            <ul>
                 {% if userInfo._id %}
-                <div class="userInfo">
-                    <img style="margin: 10px;" class="img-rounded" width="40" height="40" src="/public/img/user-pic/{{userInfo.userImg}}.png" alt="">
-                    <span class="username">{{userInfo.username}}</span>
-                    {% if userInfo.isAdmin %}
-                    <a href="/admin">进入后台管理</a>
-                    {% else %}
-                    {% endif %}
-                    <a class="logout" style="color: red;" href="javascript:;">退出</a>
-                </div>
+                <li class="user">
+                    <a href="javascript:;" class="userInfo">
+                        <img src="{{ userInfo.userImg }}" alt="">
+                    </a>
+                    <div class="userInfoBox">
+                        <ul>
+                          <!--   <li>
+                                <a href="javascript:;"><i class="fa fa-cog"></i>账号设置</a>
+                            </li> -->
+                            <li>
+                                <a href="javascript:;" class="logout"><i class="fa fa-sign-out"></i>退出</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 {% else %}
-                <a class="log" href="javascript:;"><span class="glyphicon glyphicon-user"></span> 登录</a>
+                <li class="login">
+                    <a class="log-btn" href="javascript:;">
+                        <i class="fa fa-user "></i>登录
+                    </a>
+                </li>
                 {% endif %}
+                <li class="search">
+                    <a class="fa-search" href="#search">Search</a>
+                    <form id="search" method="get" action="#">
+                        <input type="text" name="query" placeholder="搜索" />
+                    </form>
+                </li>
+                <li class="menu">
+                    <a class="fa-bars" href="#menu">Menu</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <!-- login -->
+    <section id="sign">
+        <div class="login">
+            <div class="close">
+                <span class="fa fa-close"></span>
             </div>
-            <div class="userImg">
-                <img src="/public/img/user-pic/0.png" alt="">
-                <img src="/public/img/user-pic/1.png" alt="">
-                <img src="/public/img/user-pic/2.png" alt="">
-                <img src="/public/img/user-pic/3.png" alt="">
-                <img src="/public/img/user-pic/4.png" alt="">
-                <img src="/public/img/user-pic/5.png" alt="">
-                <img src="/public/img/user-pic/6.png" alt="">
-                <img src="/public/img/user-pic/7.png" alt="">
-                <img src="/public/img/user-pic/8.png" alt="">
-                <img src="/public/img/user-pic/9.png" alt="">
-                <img src="/public/img/user-pic/10.png" alt="">
-                <img src="/public/img/user-pic/11.png" alt="">
-                <img src="/public/img/user-pic/12.png" alt="">
-                <img src="/public/img/user-pic/13.png" alt="">
-                <img src="/public/img/user-pic/14.png" alt="">
-                <img src="/public/img/user-pic/15.png" alt="">
-                <img src="/public/img/user-pic/16.png" alt="">
-                <img src="/public/img/user-pic/17.png" alt="">
-                <img src="/public/img/user-pic/18.png" alt="">
-                <img src="/public/img/user-pic/19.png" alt="">
-                <img src="/public/img/user-pic/20.png" alt="">
-                <img src="/public/img/user-pic/21.png" alt="">
-                <img src="/public/img/user-pic/22.png" alt="">
-                <img src="/public/img/user-pic/23.png" alt="">
-                <img src="/public/img/user-pic/24.png" alt="">
-            </div>
-            <div class="app-nav-btn col-xs-6 col-sm-6 col-md-6 hidden-lg text-right">
-                <span class="glyphicon glyphicon-th-list"></span>
+            <div class="switch"><span class="fa fa-toggle-on" ></span> 切换注册</div>
+            <h3>登录</h3>
+            <p>
+                <span class="icon fa fa-user"></span>
+                <input name="username" type="text" placeholder="请输入英文用户名" >
+            </p>
+            <p>
+                <span class="icon fa fa-lock"></span>
+                <input name="password" type="password" placeholder="请输入6位或以上的密码" >
+            </p>
+            <p class="safe">
+                <label class="remembermetext" for="rememberme">
+                    <input name="rememberme" type="checkbox" checked="checked" id="rememberme" class="rememberme" value="forever">记住我的登录
+                </label>
+                <a class="lost" href="/findpass">忘记密码 ?</a>
+            </p>
+            <p>
+                <button class="login-btn" type="button" >登录</button>
+            </p>
+            <span style="color: red;" class="warning"></span>
+            <div class="other-sign">
+                <p>您也可以使用第三方帐号快捷登录</p>
+                <div class="2-col">
+                    <a class="qqlogin"  href="javascript:;"><i class="fa fa-qq"></i><span>Q Q 登 录</span></a>
+                </div>
+                <div class="2-col">
+                    <a class="githublogin" href="javascript:;"><i class="fa fa-github"></i><span>github登 录</span></a>
+                </div>
             </div>
         </div>
-    </div>
+        <div class="register">
+            <div class="close">
+                <span class="fa fa-close"></span>
+            </div>
+            <div class="switch"><span class="fa fa-toggle-off" ></span> 切换登录</div>
+            <h3>注册</h3>
+            <p>
+                <span class="icon fa fa-user"></span>
+                <input name="username" type="text" placeholder="请输入英文用户名" >
+            </p>
+            <p>
+                <span class="icon fa fa-envelope"></span>
+                <input name="useremail" type="email" placeholder="请输入常用邮箱" >
+            </p>
+            <p>
+                <span class="icon fa fa-lock"></span>
+                <input name="password" type="password" placeholder="请输入6位或以上的密码" >
+            </p>
+            <p>
+                <span class="icon fa fa-retweet"></span>
+                <input name="repassword" type="password" placeholder="请再次输入密码" >
+            </p>
+            <p>
+                <button class="register-btn" type="button">注册</button>
+            </p>
+            <span style="color: red;" class="warning"></span>
+        </div>
+    </section>
+    <!-- Menu -->
+    <section id="menu">
 
-</header>
-{% block nav %}
+        <!-- Search -->
+        <section>
+            <form class="search" method="get" action="#">
+                <input type="text" name="query" placeholder="搜索" />
+            </form>
+        </section>
 
-{% endblock %}
-<div class="app-nav hidden-lg">
-    <div>
-        <div class="app-close">
-            <span style="font-size: 36px;" class="glyphicon glyphicon-remove"></span>
-        </div>
-        <div style="margin: 5px;">
-            <a style="font-size: 20px; line-height: 60px;" href="/">
-                <img style="margin-right: 5px;" class="img-circle" width="50" height="50" src="/public/img/logo.jpg" alt="">HGQ
-            </a>
-        </div>
-        <hr>
-        <div style="margin-left: 20px;">
-            <a class="obj-block" href="/"><span class=" glyphicon glyphicon-home"></span> 首页</a>
-        </div>
-        <hr>
-        <div style="margin-left: 20px;">
-            <a class="obj-block" href="/contact"><span class="glyphicon glyphicon-comment"></span> 留言</a>
-        </div>
-        <hr>
-        <div style="margin-left: 20px;">
-            <a class="obj-block" href="/about"><span class="glyphicon glyphicon-link"></span> 关于我</a>
-        </div>
-        <hr>
-        {% if userInfo._id %}
-        <div class="userInfo text-center">
-            <img style="margin: 10px;" class="img-rounded" width="40" height="40" src="/public/img/logo.jpg" alt="">
-            <span class="username">{{userInfo.username}}</span>
-            {% if userInfo.isAdmin %}
-            <a href="/admin">进入后台管理</a>
+        <!-- Links -->
+        <section>
+            <ul class="links">
+                <li>
+                    <a href="/">
+                        <h3>生活与Bug</h3>
+                        <p>记录生活中的乐与Bug。</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="/message">
+                        <h3>联系</h3>
+                        <p>寻求志同道合之群体。</p>
+                    </a>
+                </li>
+            <!--     <li>
+                    <a href="/about">
+                        <h3>关于</h3>
+                        <p>一只平凡菜鸟，不断在各种坑中跳来跳去。</p>
+                    </a>
+                </li> -->
+            </ul>
+        </section>
+
+        <!-- Actions -->
+        <section>
+            {% if userInfo._id %}
+            <ul class="actions vertical m-userInfo">
+                <li>
+                    <img src="{{ userInfo.userImg }}" alt="">
+                    <p class="userName">{{userInfo.userName}}</p>
+                    <a href="javascript:;" class="logout"><i class="fa fa-sign-out"></i>退出</a>
+                </li>
+            </ul>
             {% else %}
+            <ul class="actions vertical">
+                <li><a href="javascript:;" class="button big fit log-btn">登录</a></li>
+            </ul>
             {% endif %}
-            <a class="logout" style="color: red;" href="javascript:;">退出</a>
-        </div>
-        {% else %}
-        <div style="margin-top: 20px;" class="app-sign-btn text-center">
-            <button style="margin-right: 10px; line-height: 20px;" type="button" class="log-btn btn btn-danger"><span style="line-height: 20px;" class="glyphicon glyphicon-user"></span> 登录</button>
-            <button style="margin-left: 10px; line-height: 20px;" type="button" class="reg-btn btn btn-success"><span style="line-height: 20px;" class="glyphicon glyphicon-plus-sign"></span> 注册</button>
-        </div>
-        {% endif %}
-    </div>
-</div>
-<div class="app-login hidden-lg">
-    <div class="app-close">
-        <span style="font-size: 36px;" class="glyphicon glyphicon-remove"></span>
-    </div>
-    <a style=" color: green; font-size: 20px;" class="app-switch">切换注册</a>
-    <h3 class="text-center">登录</h3>
-    <p>
-        <span class="icon glyphicon glyphicon-user"></span>
-        <input name="username" type="text" placeholder="请输入用户名" required>
-    </p>
-    <p>
-        <span class="icon glyphicon glyphicon-lock"></span>
-        <input name="password" type="password" placeholder="请输入密码" required>
-    </p>
-    <p>
-        <input class="login-btn" type="button" value="登录"></input>
-    </p>
-    <span style="color: red;" class="warning"></span>
-</div>
-<div class="app-register hidden-lg">
-    <div class="app-close">
-        <span style="font-size: 36px;" class="glyphicon glyphicon-remove"></span>
-    </div>
-    <a style=" color: red; font-size: 20px;" class="app-switch">切换登录</a>
-    <h3 class="text-center">注册</h3>
-    <p>
-        <span class="icon glyphicon glyphicon-user"></span>
-        <input name="username" type="text" placeholder="请输入用户名" required>
-    </p>
-    <p>
-        <span class="icon glyphicon glyphicon-lock"></span>
-        <input name="password" type="password" placeholder="请输入密码" required>
-    </p>
-    <p>
-        <span class="icon glyphicon glyphicon-retweet"></span>
-        <input name="repassword" type="password" placeholder="请再次输入密码" required>
-    </p>
-    <p>
-        <input id="register-btn" class="register-btn" type="button" value="注册"></input>
-    </p>
-    <span style="color: red;" class="warning"></span>
-</div>
-{% if userInfo._id %}
-{% else %}
-<div class="sign hidden-md hidden-sm hidden-xs">
-    <div class="login">
-        <div class="close">
-            <span class="glyphicon glyphicon-remove"></span>
-        </div>
-        <div class="switch"><span class="glyphicon glyphicon-hand-left" ></span> 切换注册</div>
-        <h3>登录</h3>
-        <p>
-            <span class="icon glyphicon glyphicon-user"></span>
-            <input name="username" type="text" placeholder="请输入用户名" required>
-        </p>
-        <p>
-            <span class="icon glyphicon glyphicon-lock"></span>
-            <input name="password" type="password" placeholder="请输入密码" required>
-        </p>
-        <p>
-            <input class="login-btn" type="button" value="登录"></input>
-        </p>
-        <span style="color: red;" class="warning"></span>
-    </div>
-    <div class="register">
-        <div class="close">
-            <span class="glyphicon glyphicon-remove"></span>
-        </div>
-        <div class="switch"><span class="glyphicon glyphicon-hand-left" ></span> 切换登录</div>
-        <h3>注册</h3>
-        <p>
-            <span class="icon glyphicon glyphicon-user"></span>
-            <input name="username" type="text" placeholder="请输入用户名" required>
-        </p>
-        <p>
-            <span class="icon glyphicon glyphicon-lock"></span>
-            <input name="password" type="password" placeholder="请输入密码" required>
-        </p>
-        <p>
-            <span class="icon glyphicon glyphicon-retweet"></span>
-            <input name="repassword" type="password" placeholder="请再次输入密码" required>
-        </p>
-        <p>
-            <input class="register-btn" type="button" value="注册"></input>
-        </p>
-        <span style="color: red;" class="warning"></span>
-    </div>
-</div>
-{% endif %}
-{% block banner %}{% endblock %}
-<div class="container">
+        </section>
+    </section>
+
     {% block main %}{% endblock %}
 </div>
-<div class="top"></div>
-<footer class="footer container-fluid">
-    <p class="text-center">©2016 <a href="/">HGQ</a> . All Rights Reserved  <a href="http://www.miibeian.gov.cn/" target="_blank">鄂ICP备15011622号</a></p>
+<footer class="f-copy">
+    <p>©2017 <a href="https://hugangqiang.com">胡钢强</a> . All Rights Reserved . theme by <a href="https://hugangqiang.com">胡钢强</a> </p>
 </footer>
-
+<div class="shade"></div>
+<!-- Scripts -->
+<script src="/public/assets/js/jquery.min.js"></script>
+<script src="/public/assets/js/skel.min.js"></script>
+<script src="/public/assets/js/util.js"></script>
+<!--[if lte IE 8]><script src="/public/assets/js/ie/respond.min.js"></script><![endif]-->
+<script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+<script src="/public/assets/js/main.js"></script>
+{% block script %}{% endblock %}
 </body>
 </html>

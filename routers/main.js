@@ -1,100 +1,94 @@
 
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
-var Category = require('../models/Category');
-var Content = require('../models/Content');
-var Link = require('../models/Link');
-var Message = require('../models/Message');
-
+//数据表
+const User = require('../models/User');
+const Content = require('../models/Content');
+const Message = require('../models/Message');
 //处理通用数据
-var data;
+let data;
 router.use(function (req, res, next) {
     data = {
-        userInfo: req.userInfo,
-        categories: [],
-        news: []
+        userInfo: req.userInfo
     };
-    Category.find().then(function (categories) {
-        data.categories = categories;
+    Content.find().limit( 3 ).sort({
+        laud: -1
+    }).then(function( lauds ){
+        data.lauds = lauds;
     });
-    Content.find().limit( 5 ).populate(['category']).sort({
-        addTime: -1
-    }).then(function( news ){
-        data.news = news;
-    });
-    Link.find().then(function (links) {
-        data.links = links;
-    });
-    Message.find().limit( 5 ).sort({
+    Message.find().limit( 3 ).sort({
         addTime: -1
     }).then(function( Message ){
         data.messageNews = Message;
-        next();
     });
+    next();
 });
-
 //首页
-router.get('/',function(req,res,next){
-    data.category = req.query.category || '';
+router.get('/', function(req, res, next){
     data.count = 0;
     data.page = Number( req.query.page || 1 );
     data.limit = 15;
     data.pages = 0;
-
-    var where = {};
-    if( data.category ){
-        where.category = data.category;
-    }
-   //读取所有的分类信息
-   Content.where( where ).count().then(function (count) {
+    let where = {};
+    Content.where( where ).count().then(function (count) {
         data.count = count;
         data.pages = Math.ceil(data.count / data.limit);
         data.page = Math.min(data.page, data.pages);
         data.page = Math.max(data.page, 1);
 
-        var skip = (data.page - 1) * data.limit;
-        return Content.where( where ).find().limit( data.limit ).skip( skip ).populate(['category']).sort({
+        let skip = (data.page - 1) * data.limit;
+        return Content.where( where ).find().limit( data.limit ).skip( skip ).sort({
             addTime: -1
         });
-
-   }).then(function (contents) {
-       data.contents = contents;
-       res.render('main/index',data);
-   })
-});
-//首页内容评论
-router.get('/view',function (req, res) {
-    var contentId = req.query.contentid || '';
-    Content.findOne({
-        _id: contentId
-    }).populate(['category']).then(function ( content ) {
-        data.content = content;
-
-        content.views++;
-        content.save();
-
-        res.render('main/view',data);
-    });
-});
-
-//关于
-router.get('/about',function(req,res,next){
-    res.render('main/about', data);
+    }).then(function (contents) {
+        data.contents = contents;
+        res.render('main/index',data);
+    })
 });
 
 //留言
-router.get('/contact',function(req,res,next){
-    res.render('main/contact', data);
+router.get('/message',function(req,res,next){
+    res.render('main/message',data);
+});
+//关于
+router.get('/about',function(req,res,next){
+    res.render('main/about',data);
 });
 
-//服务
-router.get('/serve',function(req,res,next){
-    res.render('main/serve', data);
+//文章内页
+router.use('/v',function(req,res,next){
+    let contentId = req.originalUrl.slice(3);
+
+    
+    Content.findOne({
+        _id: contentId
+    }).then(function ( content ) {
+        Content.find().limit( 3 ).sort({
+            laud: -1
+        }).then(function( lauds ){
+            return lauds;
+        }).then(function(lauds){
+            Message.find().limit( 3 ).sort({
+                addTime: -1
+            }).then(function( Message ){
+                return Message;
+            }).then(function(messageNews){
+                res.render('main/view',{
+                    content: content,
+                    lauds: lauds,
+                    messageNews: messageNews,
+                    userInfo: req.userInfo
+                });
+            });
+        });
+        
+    });
+
+});
+//找回密码
+router.get('/findpass',function(req,res,next){
+    res.render('main/findpass',data);
 });
 
-//处理404
-router.get('*',function(req,res,next){
-    res.render('main/404', data);
-});
 module.exports = router;

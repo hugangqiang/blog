@@ -1,338 +1,187 @@
 
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
 
-var User = require('../models/User');
-var Category = require('../models/Category');
-var Content = require('../models/Content');
-var Message = require('../models/Message');
-var Link = require('../models/Link');
 
+//数据表
+const Content = require('../models/Content');
+const Message = require('../models/Message');
+const User = require('../models/User');
+const Github = require('../models/Github');
+const Qq = require('../models/Qq');
+
+let data;
+let responseData;
+//验证是否是管理员
 router.use(function(req,res,next){
-    if( !req.userInfo.isAdmin ){
-        res.render('admin/prevent');
+    if(typeof(req.userInfo._id) == 'undefined'){
+        res.render('main/prevent');
         return;
+    }else{
+        if( req.userInfo.isAdmin != 'admin' ){
+            res.render('main/prevent',{
+                userInfo: req.userInfo
+            });
+            return;
+        }
     }
+    data = {
+        userInfo: req.userInfo
+    };
+    responseData = {
+        code: 0,
+        message: ''
+    };
     next();
+
 });
+
 
 
 
 //首页
 router.get('/', function(req, res, next){
-    res.render('admin/index',{
-        userInfo: req.userInfo
-    })
+    res.render('admin/index',data)
 });
-//用户管理
-router.get('/user',function (req, res) {
-    //从数据库中读取所有用户数据
-    //limit(Number):限制获取的数据条数
-    //skip(1):忽略数据的条数
 
-    var page = Number( req.query.page || 1 );
-    var limit = 10;
-    var pages = 0;
 
-    User.count().then(function (count) {
 
-        //计算总页数
-        pages = Math.ceil( count/limit );
-        //取值不超过pages
-        page = Math.min( page, pages );
-        //取值不小于1
-        page = Math.max( page, 1 );
-        var skip = (page - 1)*limit;
-
-        User.find().sort({ _id: -1 }).limit(limit).skip(skip).then( function( users ){
-            res.render('admin/user_index',{
-                userInfo: req.userInfo,
-                users: users,
-
-                count: count,
-                limit: limit,
-                pages: pages,
-                page: page,
-                admin: 'user'
+//用户首页
+router.get('/user',function(req, res){
+    Github.find().then(function (users) {
+        return users;
+    }).then(function(githubs){
+        User.find().then(function (users) {
+            return users;
+        }).then(function(users){
+            Qq.find().then(function(qqs){
+                res.render('admin/user_index',{
+                    users: users,
+                    githubs: githubs,
+                    qqs: qqs,
+                    userInfo: req.userInfo
+                });
             })
-        });
+            
+        })
     })
+    
+    
 });
 //修改用户
 router.get('/user/edit',function (req, res) {
-    //获取要修改的用户的信息，并且用表单的形式展现出来
-    var id = req.query.id || '';
-    //获取要用户的信息
+    let id = req.query.id || '';
     User.findOne({
         _id: id
     }).then(function (user) {
-        if( !user ){
-            res.render('admin/error',{
-                userInfo: req.userInfo,
-                message: '用户不存在'
-            });
-        }else{
-            res.render('admin/user_edit',{
-                userInfo: req.userInfo,
-                user: user
-            });
-        }
+        res.render('admin/User_edit',{
+            userInfo: req.userInfo,
+            user: user
+        });
     });
 });
-//用户的修改保存
+//保存修改用户
 router.post('/user/edit',function (req, res) {
-
-    //获取要修改的用户的信息，并且用表单的形式展现出来
-    var id = req.query.id || '';
-    //获取post提交过来的用户名
-    var username = req.body.username || '';
-
-    //当用户信息是否为空
-    if( req.body.userImg == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '用户图标不能为空'
-        });
-        return;
-    }
-    //当用户名称是否为空
-    if( req.body.username == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '用户名不能为空'
-        });
-        return;
-    }
-    if( req.body.password == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '密码不能为空'
-        });
-        return;
-    }
-    //获取要修改的用户信息
-    User.findOne({
+    let id = req.body._id || '';
+    User.update({
         _id: id
-    }).then(function (user) {
-        if (user) {
-            //要修改的分类名称是否已经在数据库中存在
-            return User.findOne({
-                _id: {$ne: id},
-                username: username
-            });
-        }
-    }).then(function (sameUser) {
-        if( sameUser ){
-            res.render('admin/error', {
-                userInfo: req.userInfo,
-                message: '数据库中已经存在同名用户'
-            });
-            return Promise.reject();
-        }else{
-            return User.update({
-                _id: id
-            },{
-                userImg: req.body.userImg,
-                username: req.body.username,
-                password: req.body.password,
-                isAdmin: req.body.isAdmin
-            });
-        }
-    }).then(function(){
-        res.render('admin/success', {
-            userInfo: req.userInfo,
-            message: '修改成功',
-            url: '/admin/user'
-        });
-    })
+    },{
+        isAdmin: req.body.isAdmin
+    }).then(function () {
+        res.json(responseData);
+        return;
+    });
 });
 //用户删除
-router.get('/user/del', function (req, res) {
-    //获取要删除的分类id
-    var id = req.query.id || '';
-
+router.get('/user/del',function(req, res){
+    //获取要删除的内容id
+    let id = req.query.id || '';
     User.remove({
         _id: id
     }).then(function(){
-        res.render('admin/success', {
-            userInfo: req.userInfo,
-            message: '删除成功',
-            url: '/admin/user'
-        });
-    });
-});
-//分类首页
-router.get('/category',function (req, res) {
-
-    var page = Number( req.query.page || 1 );
-    var limit = 10;
-    var pages = 0;
-
-    Category.count().then(function (count) {
-
-        //计算总页数
-        pages = Math.ceil( count/limit );
-        //取值不超过pages
-        page = Math.min( page, pages );
-        //取值不小于1
-        page = Math.max( page, 1 );
-        var skip = (page - 1)*limit;
-        //sort()排序，1升序，-1降序
-        Category.find().sort({ _id: -1 }).limit(limit).skip(skip).then( function( categories ){
-            res.render('admin/category_index',{
-                userInfo: req.userInfo,
-                categories: categories,
-
-                count: count,
-                limit: limit,
-                pages: pages,
-                page: page,
-                admin: 'category'
-            })
-        });
-    })
-});
-//分类添加
-router.get('/category/add',function (req, res) {
-
-    res.render('admin/category_add',{
-        userInfo: req.userInfo
-    });
-});
-//分类的保存
-router.post('/category/add',function(req, res){
-
-    var name = req.body.name || '';
-
-    if( name == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '名称不能为空'
-        });
+        res.json(responseData);
         return;
-    }
-    //数据库中是否已经存在同名称
-    Category.findOne({
-        name: name
-    }).then(function (rs) {
-        if(rs){
-            //数据库中已经存在该类了
-            res.render('admin/error',{
-                userInfo: req.userInfo,
-                message: '分类已经存在了'
-            });
-            return Promise.reject();
-        }else{
-            //不存在可以保存
-            return new Category({
-                name: name
-            }).save();
-        }
-    }).then(function( newCategory ){
-        res.render('admin/success',{
-            userInfo: req.userInfo,
-            message: '分类保存成功',
-            url: '/admin/category'
-        });
     });
 });
-//分类修改
-router.get('/category/edit',function (req, res) {
-    //获取要修改的分类的信息，并且用表单的形式展现出来
-    var id = req.query.id || '';
-    //获取要修改的分类信息
-    Category.findOne({
-        _id: id
-    }).then(function (category) {
-        if( !category ){
-            res.render('admin/error',{
-                userInfo: req.userInfo,
-                message: '分类信息不存在'
-            });
-        }else{
-            res.render('admin/category_edit',{
-                userInfo: req.userInfo,
-                category: category
-            });
-        }
-    });
-});
-//分类的修改保存
-router.post('/category/edit',function (req, res) {
-    //获取要修改的分类的信息，并且用表单的形式展现出来
-    var id = req.query.id || '';
-    //获取post提交过来的名称
-    var name = req.body.name || '';
-    //获取要修改的分类信息
-    Category.findOne({
-        _id: id
-    }).then(function (category) {
-        if (!category) {
-            res.render('admin/error', {
-                userInfo: req.userInfo,
-                message: '分类信息不存在'
-            });
-            return Promise.reject();
-        } else {
-            //当用户是否有修改
-            if( name == category.name ){
-                res.render('admin/success', {
-                    userInfo: req.userInfo,
-                    message: '修改成功',
-                    url: '/admin/category'
-                });
-                return Promise.reject();
-            }else{
-                //要修改的分类名称是否已经在数据库中存在
-                return Category.findOne({
-                    _id: {$ne: id},
-                    name: name
-                });
-            }
-        }
-    }).then(function (sameCategory) {
-        if( sameCategory ){
-            res.render('admin/error', {
-                userInfo: req.userInfo,
-                message: '数据库中已经存在同名分类'
-            });
-            return Promise.reject();
-        }else{
-            return Category.update({
-                _id: id
-            },{
-                name: name
-            });
-        }
-    }).then(function(){
-        res.render('admin/success', {
-            userInfo: req.userInfo,
-            message: '修改成功',
-            url: '/admin/category'
-        });
-    })
-});
-//分类删除
-router.get('/category/del', function (req, res) {
-    //获取要删除的分类id
-    var id = req.query.id || '';
 
-    Category.remove({
+//修改github用户
+router.get('/userGit/edit',function (req, res) {
+    let id = req.query.id || '';
+    Github.findOne({
         _id: id
-    }).then(function(){
-        res.render('admin/success', {
+    }).then(function (user) {
+        res.render('admin/userGit_edit',{
             userInfo: req.userInfo,
-            message: '删除成功',
-            url: '/admin/category'
+            user: user
         });
     });
 });
+//保存github修改用户
+router.post('/userGit/edit',function (req, res) {
+    let id = req.body._id || '';
+    Github.update({
+        _id: id
+    },{
+        isAdmin: req.body.isAdmin
+    }).then(function () {
+        res.json(responseData);
+        return;
+    });
+});
+//github用户删除
+router.get('/userGit/del',function(req, res){
+    //获取要删除的内容id
+    let id = req.query.id || '';
+    Github.remove({
+        _id: id
+    }).then(function(){
+        res.json(responseData);
+        return;
+    });
+});
+
+//修改QQ用户
+router.get('/userQq/edit',function (req, res) {
+    let id = req.query.id || '';
+    Qq.findOne({
+        _id: id
+    }).then(function (user) {
+        res.render('admin/userQq_edit',{
+            userInfo: req.userInfo,
+            user: user
+        });
+    });
+});
+//保存QQ修改用户
+router.post('/userQq/edit',function (req, res) {
+    let id = req.body._id || '';
+    Qq.update({
+        _id: id
+    },{
+        isAdmin: req.body.isAdmin
+    }).then(function () {
+        res.json(responseData);
+        return;
+    });
+});
+//QQ用户删除
+router.get('/userQq/del',function(req, res){
+    //获取要删除的内容id
+    let id = req.query.id || '';
+    Qq.remove({
+        _id: id
+    }).then(function(){
+        res.json(responseData);
+        return;
+    });
+});
+
 //内容首页
 router.get('/content',function(req, res){
 
-    var page = Number( req.query.page || 1 );
-    var limit = 10;
-    var pages = 0;
+    let page = Number( req.query.page || 1 );
+    let limit = 10;
+    let pages = 0;
 
     Content.count().then(function (count) {
 
@@ -342,16 +191,16 @@ router.get('/content',function(req, res){
         page = Math.min( page, pages );
         //取值不小于1
         page = Math.max( page, 1 );
-        var skip = (page - 1)*limit;
+        let skip = (page - 1)*limit;
         //sort()排序，1升序，-1降序
-        Content.find().sort({ _id: -1 }).limit(limit).skip(skip).populate('category').then( function( contents ){
+        Content.find().sort({ addTime: -1 }).limit(limit).skip(skip).then( function( contents ){
             res.render('admin/content_index',{
-                userInfo: req.userInfo,
                 contents: contents,
                 count: count,
                 limit: limit,
                 pages: pages,
                 page: page,
+                userInfo: req.userInfo,
                 admin: 'content'
             })
         });
@@ -359,156 +208,73 @@ router.get('/content',function(req, res){
 });
 //内容添加
 router.get('/content/add',function(req, res){
-    Category.find().sort({_id: -1}).then(function (categories) {
-        res.render('admin/content_add',{
-            userInfo: req.userInfo,
-            categories: categories
-        })
-    });
+    res.render('admin/content_add',data)
 });
 //内容保存
 router.post('/content/add',function (req, res) {
-    if( req.body.category == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '内容分类不能为空'
-        });
-        return;
-    }
-    if( req.body.title == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '内容标题不能为空'
-        });
-        return;
-    }
-    if( req.body.description == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '内容简介不能为空'
-        });
-        return;
-    }
-    if( req.body.content == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '内容不能为空'
-        });
-        return;
-    }
 
     //保存数据到数据库
     new Content({
-        category: req.body.category,
-        title: req.body.title,
         userImg: req.userInfo.userImg,
-        user: req.userInfo.username,
+        user: req.userInfo.userName,
+        title: req.body.title,
+        titleImg: req.body.titleImg,
         description: req.body.description,
-        content: req.body.content
+        content: req.body.content,
+        addTime: new Date()
     }).save().then(function (rs) {
-        res.render('admin/success',{
-            userInfo: req.userInfo,
-            message: '内容保存成功',
-            url: '/admin/content'
-        });
+        res.json(responseData);
+        return;
     });
 });
 //修改内容
 router.get('/content/edit',function (req, res) {
-    var id = req.query.id || '';
-    var categories = [];
+    let id = req.query.id || '';
 
-    Category.find().sort({_id: -1}).then(function (rs) {
-        categories = rs;
-        return Content.findOne({
-            _id: id
-        }).populate('category');
+    Content.findOne({
+        _id: id
     }).then(function (content) {
-        if(!content){
-            res.render('admin/error',{
-                userInfo: req.userInfo,
-                message: '指定内容不存在'
-            });
-            return Promise.reject();
-        }else{
-            res.render('admin/content_edit',{
-                userInfo: req.userInfo,
-                categories: categories,
-                content: content
-            });
-        }
+        res.render('admin/content_edit',{
+            userInfo: req.userInfo,
+            content: content
+        });
     });
 });
 //保存修改内容
 router.post('/content/edit',function (req, res) {
-    var id = req.query.id || '';
-    if( req.body.category == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '内容分类不能为空'
-        });
-        return;
-    }
-    if( req.body.title == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '内容标题不能为空'
-        });
-        return;
-    }
-    if( req.body.description == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '内容简介不能为空'
-        });
-        return;
-    }
-    if( req.body.content == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '内容不能为空'
-        });
-        return;
-    }
+    let id = req.body._id || '';
     Content.update({
         _id: id
     },{
-        category: req.body.category,
+        userImg: req.userInfo.userImg,
+        user: req.userInfo.userName,
         title: req.body.title,
         description: req.body.description,
         content: req.body.content
     }).then(function () {
-        res.render('admin/success',{
-            userInfo: req.userInfo,
-            message: '内容保存成功',
-            url: '/admin/content'
-        })
+        res.json(responseData);
+        return;
     });
 });
 //内容删除
 router.get('/content/del',function(req, res){
     //获取要删除的内容id
-    var id = req.query.id || '';
-
+    let id = req.query.id || '';
     Content.remove({
         _id: id
     }).then(function(){
-        res.render('admin/success', {
-            userInfo: req.userInfo,
-            message: '删除成功',
-            url: '/admin/content'
-        });
+        res.json(responseData);
+        return;
     });
 });
-//留言首页
-router.get('/message',function (req, res) {
-    //从数据库中读取所有用户数据
-    //limit(Number):限制获取的数据条数
-    //skip(1):忽略数据的条数
 
-    var page = Number( req.query.page || 1 );
-    var limit = 10;
-    var pages = 0;
+
+//留言首页
+router.get('/message',function(req, res){
+
+    let page = Number( req.query.page || 1 );
+    let limit = 10;
+    let pages = 0;
 
     Message.count().then(function (count) {
 
@@ -518,153 +284,61 @@ router.get('/message',function (req, res) {
         page = Math.min( page, pages );
         //取值不小于1
         page = Math.max( page, 1 );
-        var skip = (page - 1)*limit;
-
-        Message.find().sort({
-            addTime: -1
-        }).limit(limit).skip(skip).then( function( messages ){
+        let skip = (page - 1)*limit;
+        //sort()排序，1升序，-1降序
+        Message.find().sort({ _id: -1 }).limit(limit).skip(skip).then( function( messages ){
             res.render('admin/message_index',{
-                userInfo: req.userInfo,
                 messages: messages,
                 count: count,
                 limit: limit,
                 pages: pages,
                 page: page,
+                userInfo: req.userInfo,
                 admin: 'message'
             })
         });
     })
 });
-//留言回复
-router.get('/message/reply',function(req, res){
-    res.render('admin/message_reply',{
-        userInfo: req.userInfo
+router.get('/message/reply',function (req, res) {
+    let id = req.query.id || '';
+    Message.find({
+        _id: id
+    }).then(function(message){
+        res.render('admin/message_rep', {
+            userInfo: req.userInfo,
+            message: message[0]
+        });
+
     })
 });
-//留言回复保存
 router.post('/message/reply',function (req, res) {
-    var id = req.query.id || '';
-    if( req.body.reply == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '回复内容不能为空'
-        });
-        return;
-    }
+    let id = req.body.id || '';
+    
     //保存数据到数据库
     Message.update({
         _id: id
     },{
-        reply: req.body.reply
+        reply: {
+            content: req.body.reply,
+            user: req.userInfo.userName,
+            userImg: req.userInfo.userImg,
+            addTime: new Date()
+        }
     }).then(function () {
-        res.render('admin/success',{
-            userInfo: req.userInfo,
-            message: '内容保存成功',
-            url: '/admin/message'
-        })
+        res.json(responseData);
+        return;
     });
 });
-//留言删除
+
+//内容删除
 router.get('/message/del',function(req, res){
     //获取要删除的内容id
-    var id = req.query.id || '';
-
+    let id = req.query.id || '';
     Message.remove({
         _id: id
     }).then(function(){
-        res.render('admin/success', {
-            userInfo: req.userInfo,
-            message: '删除成功',
-            url: '/admin/message'
-        });
-    });
-});
-
-//友链首页
-router.get('/link',function(req, res){
-
-    var page = Number( req.query.page || 1 );
-    var limit = 10;
-    var pages = 0;
-
-    Link.count().then(function (count) {
-
-        //计算总页数
-        pages = Math.ceil( count/limit );
-        //取值不超过pages
-        page = Math.min( page, pages );
-        //取值不小于1
-        page = Math.max( page, 1 );
-        var skip = (page - 1)*limit;
-        //sort()排序，1升序，-1降序
-        Link.find().sort({ _id: -1 }).limit(limit).skip(skip).then( function( links ){
-            res.render('admin/link_index',{
-                userInfo: req.userInfo,
-                links: links,
-                count: count,
-                limit: limit,
-                pages: pages,
-                page: page,
-                admin: 'link'
-            })
-        });
-    })
-});
-//友链添加
-router.get('/link/add',function(req, res){
-    res.render('admin/link_add',{
-        userInfo: req.userInfo
-    })
-});
-//友链保存
-router.post('/link/add',function (req, res) {
-    if( req.body.logo == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '请上传友链logo'
-        });
+        res.json(responseData);
         return;
-    }
-    if( req.body.name == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '友链名称不能为空'
-        });
-        return;
-    }
-    if( req.body.href == '' ){
-        res.render('admin/error',{
-            userInfo: req.userInfo,
-            message: '友链链接不能为空'
-        });
-        return;
-    }
-    //保存数据到数据库
-    new Link({
-        logo: req.body.logo,
-        name: req.body.name,
-        href: req.body.href
-    }).save().then(function (rs) {
-        res.render('admin/success',{
-            userInfo: req.userInfo,
-            message: '内容保存成功',
-            url: '/admin/link'
-        });
-    });
-});
-//友链删除
-router.get('/link/del',function(req, res){
-    //获取要删除的内容id
-    var id = req.query.id || '';
-
-    Link.remove({
-        _id: id
-    }).then(function(){
-        res.render('admin/success', {
-            userInfo: req.userInfo,
-            message: '删除成功',
-            url: '/admin/link'
-        });
     });
 });
 module.exports = router;

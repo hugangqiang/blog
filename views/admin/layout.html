@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>后台管理</title>
-    <link rel="stylesheet" href="/public/css/bootstrap.min.css" type="text/css">
-    <script src="/public/js/jquery-2.1.4.min.js"></script>
-    <script src="/public/js/bootstrap.min.js"></script>
-
+    <link rel="shortcut icon" href="/public/images/favicon.ico" />
+    <link rel="stylesheet" href="/public/assets/css/bootstrap.min.css" type="text/css">
+    <script src="/public/assets/js/jquery.min.js"></script>
+    <script src="/public/assets/js/bootstrap.min.js"></script>
+    <script src="/public/assets/js/modal.js"></script>
     <style>
         body{
             margin: 0;
             font-family: microsoft YaHei;
         }
-        .jumbotron{
-            margin: 0;
-            padding: 50px;
-        }
+
     </style>
+    {% block style %}{% endblock %}
 </head>
 <body>
 <nav class="navbar navbar-default" role="navigation">
@@ -52,7 +51,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ userInfo.username }} <span class="caret"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ userInfo.userName }} <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="/">退出</a></li>
                     </ul>
@@ -64,6 +63,6 @@
 <div class="container-fluid">
     {% block main %}{% endblock %}
 </div>
-
+{% block script %}{% endblock %}
 </body>
 </html>

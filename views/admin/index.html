@@ -1,5 +1,12 @@
-{% extends 'layout.html' %}
-
+{% extends './layout.html' %}
+{% block style %}
+<style>
+    .jumbotron{
+        margin: 0;
+        padding: 50px;
+    }
+</style>
+{% endblock %}
 {% block main %}
 <div class="jumbotron">
     <h1>Hello! {{ userInfo.username }}</h1>

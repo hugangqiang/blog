@@ -1,16 +1,21 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 //用户的表结构
 module.exports = new mongoose.Schema({
-    //用户图标
-    userImg: String,
     //用户名
-    username: String,
-    //密码
+    userName: String,
     password: String,
-    //是否是管理员
+    userEmail: String,
+    qq: String,
+    github: String,
     isAdmin: {
-        type: Boolean,
-        default: false
-    }
+        type: String,
+        default: 'author'
+    },
+    //注册时间
+    addTime: {
+        type: Date,
+        default: ''
+    },
+    userImg: String
 });

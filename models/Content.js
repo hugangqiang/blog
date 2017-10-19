@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
-var contentsSchema = require('../schemas/contents');
+const mongoose = require('mongoose');
+let contentsSchema = require('../schemas/contents');
 
-module.exports = mongoose.model('Content',contentsSchema);
+module.exports = mongoose.model('contents',contentsSchema);

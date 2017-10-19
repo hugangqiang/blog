@@ -1,141 +1,168 @@
-{% extends 'layout.html' %}
-
+{% extends './layout.html' %}
+{% block style %}
+<style>
+    .viewImg {
+        position: relative;
+        background: #eee;
+        border: 1px solid #ddd;
+        width: 150px;
+        height: 100px;
+        overflow: hidden;
+        display: none;
+    }
+    .viewImg img{
+        width: 100%;
+        height: 100%;
+    }
+    .file {
+        position: relative;
+        display: inline-block;
+        background: #eee;
+        border: 1px solid #ddd;
+        width: 100px;
+        height: 100px;
+        overflow: hidden;
+    }
+    .file:before,
+    .file:after{
+        content: '';
+        width: 50px;
+        height: 3px;
+        background: #ddd;
+        position: absolute;
+        left: 25px;
+        top: 50px;
+        pointer-events: none;
+    }
+    .file:after{
+        transform: rotateZ(90deg);
+    }
+    .file input {
+        position: absolute;
+        right: 0;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        opacity: 0;
+    }
+    .file:hover {
+        background: #ddd;
+        border-color: #eee;
+    }
+    .file:hover:before,
+    .file:hover:after{
+        background: #fff;
+    }
+    .form-box{
+        margin-bottom: 50px;
+    }
+    .warning{
+        font-size: 12px;
+        color: red;
+        margin: 10px 0;
+        padding: 0;
+    }
+</style>
+{% endblock %}
 {% block main %}
-<ol class="breadcrumb">
-    <li><a href="/admin">管理首页</a></li>
-    <li><span>内容修改</span></li>
-</ol>
-<h3>内容修改 --{{ content.title }}</h3>
-<form role="form" method="post">
-    <div class="form-group">
-        <label for="category">分类：</label>
-        <select name="category" id="category" class="form-control">
-            {% for category in categories %}
-                {% if content.category._id.toString() == category._id.toString() %}
-            <option value="{{category.id}}" selected>{{category.name}}</option>
-                {% else %}
-            <option value="{{category.id}}">{{category.name}}</option>
-                {% endif%}
-            {% endfor %}
-        </select>
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="/admin">管理首页</a></li>
+        <li><span>内容修改</span></li>
+    </ol>
+    <h3 style="margin-bottom: 20px;">内容修改</h3>
+    <div class="form-box">
+        <div class="form-group">
+            <input type="text" class="form-control" value="{{ content.title }}"  placeholder="请输入内容标题" name="title">
+        </div>
+        <div class="form-group">
+            <textarea class="form-control"   name="description" rows="5" placeholder="请输入内容简介">{{ content.description }}</textarea>
+        </div>
+        <div id="editor">{{ content.content | safe }}</div>
+        <div class="form-group" style="margin-top: 20px;">
+            <button type="button" class="btn btn-default">保存</button>
+            <p class="warning"></p>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="title">标题：</label>
-        <input type="text" value="{{ content.title }}" class="form-control" id="title" placeholder="请输入内容标题" name="title">
-    </div>
-    <div class="form-group">
-        <label for="description">简介：</label>
-        <textarea class="form-control" id="description"  name="description" rows="5" placeholder="请输入内容简介">{{content.description}}</textarea>
-    </div>
-    <div class="form-group">
-        <label for="content">内容：</label>
-        <script id="editor" type="text/plain" id="content"  name="content" style="width:100%;height:500px;">{% autoescape false %}{{content.content}}{% endautoescape %}</script>
-    </div>
-    <button type="submit" class="btn btn-default">提交</button>
-</form>
-<script src="/public/ueditor/ueditor.config.admin.js"></script>
-<script src="/public/ueditor/ueditor.all.min.js"> </script>
-<script src="/public/ueditor/lang/zh-cn/zh-cn.js"> </script>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script src="/public/assets/js/wangEditor.min.js"></script>
 <script>
-    //实例化编辑器
-    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
-    var ue = UE.getEditor('editor');
+    let E = window.wangEditor;
+    let editor = new E('#editor');
+    editor.customConfig.zIndex = 10;
+    // 配置服务器端地址
+    editor.customConfig.uploadImgServer = '/api/upload/img';
+    editor.customConfig.uploadImgHooks = {
+        customInsert: function (insertImg, result, editor) {
+            let url = '/public/images/upload/'+result.message;
+            insertImg(url)
+        }
+    };
+    // 自定义菜单配置
+    editor.customConfig.menus = [
+        'head',  // 标题
+        'bold',  // 粗体
+        'italic',  // 斜体
+        'underline',  // 下划线
+        'foreColor',  // 文字颜色
+        'link',  // 插入链接
+        'list',  // 列表
+        'justify',  // 对齐方式
+        'quote',  // 引用
+        'emoticon',  // 表情
+        'image',  // 插入图片
+        'video',  // 插入视频
+        'code'  // 插入代码
+    ];
+    editor.create();
+    $('.form-box .btn').on('click',function(){
+        $('.form-box .warning').html('');
+        let title = $('.form-box').find('[name = title]').val();
+        let description = $('.form-box').find('[name = description]').val();
+        let content = editor.txt.html();
 
-    function isFocus(e){
-        alert(UE.getEditor('editor').isFocus());
-        UE.dom.domUtils.preventDefault(e)
-    }
-    function setblur(e){
-        UE.getEditor('editor').blur();
-        UE.dom.domUtils.preventDefault(e)
-    }
-    function insertHtml() {
-        var value = prompt('插入html代码', '');
-        UE.getEditor('editor').execCommand('insertHtml', value)
-    }
-    function createEditor() {
-        enableBtn();
-        UE.getEditor('editor');
-    }
-    function getAllHtml() {
-        alert(UE.getEditor('editor').getAllHtml())
-    }
-    function getContent() {
-        var arr = [];
-        arr.push("使用editor.getContent()方法可以获得编辑器的内容");
-        arr.push("内容为：");
-        arr.push(UE.getEditor('editor').getContent());
-        return  arr.join("\n");
-    }
-    function getPlainTxt() {
-        var arr = [];
-        arr.push("使用editor.getPlainTxt()方法可以获得编辑器的带格式的纯文本内容");
-        arr.push("内容为：");
-        arr.push(UE.getEditor('editor').getPlainTxt());
-        alert(arr.join('\n'))
-    }
-    function setContent(isAppendTo) {
-        var arr = [];
-        arr.push("使用editor.setContent('欢迎使用ueditor')方法可以设置编辑器的内容");
-        UE.getEditor('editor').setContent('欢迎使用ueditor', isAppendTo);
-        alert(arr.join("\n"));
-    }
-    function setDisabled() {
-        UE.getEditor('editor').setDisabled('fullscreen');
-        disableBtn("enable");
-    }
-
-    function setEnabled() {
-        UE.getEditor('editor').setEnabled();
-        enableBtn();
-    }
-
-    function getText() {
-        //当你点击按钮时编辑区域已经失去了焦点，如果直接用getText将不会得到内容，所以要在选回来，然后取得内容
-        var range = UE.getEditor('editor').selection.getRange();
-        range.select();
-        var txt = UE.getEditor('editor').selection.getText();
-        alert(txt)
-    }
-
-    function getContentTxt() {
-        var arr = [];
-        arr.push("使用editor.getContentTxt()方法可以获得编辑器的纯文本内容");
-        arr.push("编辑器的纯文本内容为：");
-        arr.push(UE.getEditor('editor').getContentTxt());
-        alert(arr.join("\n"));
-    }
-    function hasContent() {
-        var arr = [];
-        arr.push("使用editor.hasContents()方法判断编辑器里是否有内容");
-        arr.push("判断结果为：");
-        arr.push(UE.getEditor('editor').hasContents());
-        alert(arr.join("\n"));
-    }
-    function setFocus() {
-        UE.getEditor('editor').focus();
-    }
-    function deleteEditor() {
-        disableBtn();
-        UE.getEditor('editor').destroy();
-    }
-    function disableBtn(str) {
-        var div = document.getElementById('btns');
-        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
-        for (var i = 0, btn; btn = btns[i++];) {
-            if (btn.id == str) {
-                UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
-            } else {
-                btn.setAttribute("disabled", "true");
+        if(title == '' ){
+            $('.form-box .warning').html('标题不能为空！');
+            return;
+        }
+        if(description == '' ){
+            $('.form-box .warning').html('简介不能为空！');
+            return;
+        }
+        if(editor.txt.text() == '' ){
+            $('.form-box .warning').html('内容不能为空！');
+            return;
+        }
+        $.ajax({
+            type: 'post',
+            url: '/admin/content/edit',
+            data: {
+                title: title,
+                description: description,
+                content: content,
+                _id: "{{content._id}}"
+            },
+            dataType: 'json',
+            success: function (result) {
+                $('.form-box .warning').html( result.message );
+                if( !result.code ){
+                    H.modal({
+                        title: "提示",
+                        message: "保存成功！",
+                        btnok: "内容列表",
+                        btncl: "",
+                        okFn: function(){
+                            window.location.href = '/admin/content';
+                        }
+                    })
+                }
             }
-        }
-    }
-    function enableBtn() {
-        var div = document.getElementById('btns');
-        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
-        for (var i = 0, btn; btn = btns[i++];) {
-            UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
-        }
-    }
+        });
+    });
 </script>
 {% endblock %}

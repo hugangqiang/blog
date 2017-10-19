@@ -1,0 +1,33 @@
+{% extends './layout.html' %}
+{% block style %}
+<style>
+    body{
+        background: #fff;
+    }
+    .err{
+        text-align: center;
+        margin: 50px auto;
+    }
+    .err .btn{
+        background: #2ebaae;
+        border: 2px solid #2ebaae;
+        font-size: 14px;
+        padding: 10px 30px;
+        border-radius: 10px;
+        color: #fff;
+    }
+    .err .btn:hover{
+        background: #fff;
+        color: #2ebaae;
+    }
+</style>
+{% endblock %}
+{% block main %}
+<div class="err">
+    <img src="/public/images/404.gif" alt="">
+    <img src="/public/images/404.gif" alt="">
+    <img src="/public/images/404.gif" alt="">
+    <p>让你不是管理员，瞎闯，闯进来算我输！</p>
+    <a class="btn" href="/" role="button">回首页</a>
+</div>
+{% endblock %}

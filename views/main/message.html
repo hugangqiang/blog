@@ -1,0 +1,251 @@
+{% extends './layout.html' %}
+
+{% block seo %}
+<title>联系-胡钢强-前端博客</title>
+<meta name="description" content="胡钢强，一个前端菜鸟的博客，疯狂的代码可以创造所有，记录从一个菜鸟到老鸟的过程。">
+{% endblock %}
+
+{% block main %}
+<div id="message">
+	<header>
+		<div class="title"><h2>联系</h2></div>
+        <p>如有某种合作意向，可通过以下任一方式联系到我</p>
+        <p>(1)邮箱：gangqianghu@gmail.com</p>
+        <p>(2)github: https://github.com/hugangqiang</p>
+		<p>(3)QQ: 1463035198</p>
+	</header>
+	<section>
+		<form class="form-box" method="post">
+			{% if userInfo._id %}
+			<div class="userBox clearfix">
+				<div class="box">
+					<img class="userRad" src="{{ userInfo.userImg }}" alt="">
+				</div>
+				<div class="box">
+					<p>已登录：{{ userInfo.userName }}， <a href="javascript:;" class="logout">注销</a>？</p>
+					<p><i class="fa fa-hand-o-right"></i><span class="count">已经有0条留言抢在你前面了~</span></p>
+				</div>
+			</div>
+			{% else %}
+			<div class="userBox clearfix">
+				<div class="box">
+					<img class="userRad" src="/public/images/userImg/none.png" alt="">
+				</div>
+				<div class="box">
+					<p>欢迎新朋友的到来！</p>
+					<p><i class="fa fa-hand-o-right"></i><span class="count">已经有0条留言抢在你前面了~</span></p>
+				</div>
+			</div>
+
+			<div class="row uniform">
+				<div class="6u 12u$(xsmall)">
+					<input type="text" name="userName" id="demo-name" value="" placeholder="请输入用户名">
+				</div>
+				<div class="6u$ 12u$(xsmall)">
+					<input type="email" name="userEmail" id="demo-email" value="" placeholder="请输入邮箱">
+				</div>
+			</div>
+			{% endif %}
+			<div class="row uniform">
+				<div class="12u$">
+					<div id="editor"></div>
+					<p class="warning"></p>
+				</div>
+				<div class="12u$">
+					<div class="actions">
+						<button type="button" class="btn">留言</button>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="alert" >
+			<strong>亲爱的朋友：</strong> 上面的信息框请您不要胡乱填写，尊重博主就等于尊重您自己，祝您每天都有一个好心情！
+		</div>
+	</section>
+	<section>
+		<div id="message-conent"></div>
+		<div class="pages">
+			<div id="pages" class="clearfix"></div>
+		</div>
+	</section>
+</div>
+{% endblock %}
+{% block script %}
+<script src="/public/assets/js/wangEditor.min.js"></script>
+<script>
+    let E = window.wangEditor;
+    let editor = new E('#editor');
+    editor.customConfig.zIndex = 10;
+
+    // 自定义菜单配置
+    editor.customConfig.menus = [
+        'emoticon',
+        'code'
+    ];
+    // 配置服务器端地址
+    editor.customConfig.uploadImgServer = '/api/upload/img';
+    editor.customConfig.uploadImgHooks = {
+        customInsert: function (insertImg, result, editor) {
+            let url = '/public/images/upload/'+result.message;
+            insertImg(url)
+        }
+    };
+    editor.create();
+    $('#editor .w-e-text-container').css('height','160px');
+ 
+
+ 	//分页
+    let prepage = 10;
+    let page = 1;
+    let pages = 0;
+    let messages = [];
+    $('.form-box .btn').on('click',function(){
+
+        $('.form-box .warning').html('');
+        let userName = $('.form-box').find('[name = userName]').val();
+        let userEmail = $('.form-box').find('[name = userEmail]').val();
+        let content = editor.txt.html();
+
+        if( typeof (userName) != "undefined" ){
+            if(userName == '' ){
+                $('.form-box .warning').html('用户名不能为空！');
+                return;
+            }
+            if(userEmail == '' ){
+                $('.form-box .warning').html('邮箱不能为空！');
+                return;
+            }
+            let regEmail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+            if(!regEmail.test(userEmail ) ){
+                $('.form-box .warning').html('请输入正确的邮箱！');
+                return;
+            }
+		}
+
+        if(editor.txt.text() == '' ){
+            $('.form-box .warning').html('内容不能为空！');
+            return;
+        }
+        $.ajax({
+            type: 'post',
+            url: '/api/message',
+            data: {
+                userName: userName,
+                userEmail: userEmail,
+                content: content,
+				ip: returnCitySN
+            },
+            dataType: 'json',
+            success: function (result) {
+                $('.form-box .warning').html( result.message );
+
+                if( !result.code ){
+                    setTimeout(function () {
+                        editor.txt.html('');
+                        $('.form-box .warning').html('');
+                        if( typeof (userName) != "undefined" ){
+                        	$('.form-box').find('[name = userName]').val('');
+							$('.form-box').find('[name = userEmail]').val('');
+                        }
+                    },500);
+                    messages = result.data.reverse();
+                    renderMessage();
+                    pageFn();
+                }
+            }
+        });
+    });
+    
+    function date(str,style) {
+        let date = new Date(str);
+        function p(s) {
+            return s < 10 ? '0' + s: s;
+        }
+        if( style == "文字" ){
+            return date.getFullYear() + '年' + p((date.getMonth() + 1)) + '月' + p(date.getDate()) + '日  ' + p(date.getHours()) + ':' + p(date.getMinutes()) + ':' + p(date.getSeconds());
+        }else{
+            return date.getFullYear() + '-' + p((date.getMonth() + 1)) + '-' + p(date.getDate()) + '  ' + p(date.getHours()) + ':' + p(date.getMinutes()) + ':' + p(date.getSeconds());
+        }
+    }
+    function renderMessage() {
+    	$('.form-box .userBox .count').html(`已经有条${messages.length}留言抢在你前面了~`)
+        pages = Math.max(Math.ceil(messages.length / prepage),1);
+        let start = Math.max(0, (page-1) * prepage);
+        let end = Math.min(start + prepage, messages.length);
+        let html = '';
+        for(let i=start; i<end; i++){
+            if(!messages[i].reply){
+                html += `<div class="comment clearfix">
+							<div class="comment-img">
+								<img class="userRad" src="${messages[i].userImg}" alt="">
+							</div>
+							<div class="comment-content">
+								<div class="comment-name clearfix">
+									<div class="left">
+										<span>${ messages[i].user }</span>
+									</div>
+									<div class="right">
+										<span class="ip">[${ messages[i].ip.cname }网友]</span>
+									</div>
+								</div>
+								<div class="comment-mes">${ messages[i].message }</div>
+								<div class="date">${ date(messages[i].addTime,'文字') }</div>
+							</div>
+						</div>`;
+            }else{
+                html += `<div class="comment clearfix">
+                            <div class="comment-img">
+                                <img class="userRad" src="${messages[i].userImg}" alt="">
+                            </div>
+                            <div class="comment-content">
+                                <div class="comment-name clearfix">
+                                    <div class="left">
+                                        <span>${ messages[i].user }</span>
+                                    </div>
+                                    <div class="right">
+                                        <span class="ip">[${ messages[i].ip.cname }网友]</span>
+                                    </div>
+                                </div>
+                                <div class="comment-mes">${ messages[i].message }</div>
+                                <div class="date">${ date(messages[i].addTime,'文字') }</div>
+                                <div class="reply">
+                                    <div class="reply-img">
+                                        <img class="userRad" src="${messages[i].reply.userImg}" />
+                                        <span>${messages[i].reply.user}</span>
+                                    </div>
+                                    <div class="reply-content">
+                                        <div class="reply-rep">${messages[i].reply.content}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+            }
+        }
+        $('#message-conent').html(html);
+    }
+    function pageFn(){
+    	$('#pages').paging({
+		    initPageNo: page, // 初始页码
+		    totalPages: pages, //总页数
+		    totalCount: '', // 条目总数
+		    slideSpeed: 600, // 缓动速度。单位毫秒 
+		    callback: function(_page) { // 回调函数 
+		    	page = _page;
+		     	renderMessage();
+		    }
+		})
+    }
+    //每次页面重载的时候获取留言
+   	$.ajax({
+        url: '/api/message',
+        dataType: 'json',
+        success: function (responseData) {
+            messages = responseData.data.reverse();
+            renderMessage();
+           	pageFn();
+        }
+    });
+    
+    
+</script>
+{% endblock %}

@@ -1,173 +1,355 @@
-{% extends 'layout.html' %}
-{% block nav %}
-<div class="container  hidden-md  hidden-xs hidden-sm marginT-20 " style="padding: 0 10px;">
-    <div class="index-content-nav" style=" height: 40px; position: relative; background: #428bca;">
-        {% for category in categories %}
-        <a style="display: block; padding: 10px; float: left; color: #fff;" href="/?category={{category.id}}">{{ category.name }}</a>
-        {% endfor %}
-    </div>
-</div>
+{% extends './layout.html' %}
+{% block seo %}
+<title>{{ content.title }}</title>
+<meta name="description" content="{{ content.description }}">
 {% endblock %}
+
 {% block main %}
-    <div class="index-content row">
-        <div style="padding: 0 10px;" class="col-lg-9">
-            <div class="bg-fff">
-                <div class="text-center">
-                    <h3 style="margin: 20px 0;">{{content.title}}</h3>
-                    <p style="color: #999;">
-                        <span style="margin-right: 20px;">{{ content.addTime|date('Y-m-d',-60*8) }}</span>
-                        <span style="margin-right: 20px;">分类：<a style="color: #999;" href="/?category={{ content.category.id }}">{{ content.category.name  }}</a></span>
-                        <span style="margin-right: 20px;">阅读（{{ content.views }}）</span>
-                        <span>评论（{{ content.comments.length }}）</span>
-                    </p>
-                    <hr style="margin: 30px 0;">
-                </div>
-                <div>{% autoescape false %}{{ content.content }}{% endautoescape %}</div>
-            </div>
-            <div style="padding: 20px; margin-top: 20px;" class="comment bg-fff">
-                <h4>评论</h4>
-                {% if userInfo._id %}
-                <script id="editor" type="text/plain" style="height:100px; width:100%; margin-top:10px;"></script>
-                <input type="hidden" name="contentId" value="{{content.id}}">
-                <div style="margin-top: 10px; color: red;" class="text-left">
-                    <span class="warning"></span>
-                </div>
-                <div class="text-right">
-                    <button type="button" class="btn-comment btn btn-primary">评论</button>
-                </div>
-                {% else %}
-                <textarea style="resize: none; margin-top: 10px;" disabled="disabled" class="form-control" placeholder="您还没登录，请登录后发表评论！" id="message" rows="4"></textarea>
-                <input type="hidden" name="contentId" value="{{content.id}}">
-                <div style="margin-top: 10px;" class="text-right">
-                    <button type="button" class=" btn btn-primary log">登录</button>
-                </div>
-                {% endif %}
-                <div style="margin-top: 30px;" class="panel panel-warning">
-                    <div class="panel-heading">
-                        <b>亲爱的朋友：</b>上面的信息框请您不要胡乱填写，尊重博主就等于尊重您自己，祝您每天都有一个好心情！
-                    </div>
-                </div>
-                <div class="messagelist"></div>
-                {%include 'page.html'%}
-            </div>
-        </div>
-        <div style="padding: 0 10px;"  class="col-lg-3 hidden-md  hidden-xs hidden-sm">
-            <div class="bg-fff">
-                <h4 style="margin-bottom: 20px;">最新发布</h4>
-                {% for news in news %}
-                <div>
-                    <p style="margin: 10px;"><a href="/view?contentid={{ news.id }}">{{ news.title }}</a></p>
-                    <span style="margin: 10px;">{{ news.addTime|date('Y/m/d',-60*8) }}</span>
-                    <hr>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-<script src="/public/ueditor/ueditor.config.js"></script>
-<script src="/public/ueditor/ueditor.all.min.js"> </script>
-<script src="/public/ueditor/lang/zh-cn/zh-cn.js"> </script>
+
+<!-- Sidebar -->
+<section id="sidebar-v"><!-- Mini Posts -->
+	<section>
+		<div class="mini-posts">
+			{% for laud in lauds %}
+			<article class="mini-post">
+				<div class="con">
+					<h3 class="title">
+						<a href="/v/{{laud._id}}" target="_blank">{{ laud.title }}</a>
+					</h3>
+					<div class="description">
+						<p>{{ laud.description | truncate(30,false,'...', 0) }}</p>
+					</div>
+					<div class="meta">
+						<span class="user-img">
+							<img src="{{laud.userImg}}" alt="">
+						</span>
+						<span class="user">{{laud.user}}</span>
+						<span class="views">
+							<i class="fa fa-eye"></i>{{ laud.views }}
+						</span>
+						<span class="comments">
+							<i class="fa fa-comments-o"></i>{{ laud.comments.length }}
+						</span>
+					</div>
+				</div>
+				
+				{% if laud.titleImg %}
+				<div class="title-img">
+					<a href="/v/{{laud._id}}" target="_blank" class="image">
+						<img src="{{laud.titleImg}}" alt="">
+					</a>
+				</div>
+				{% endif %}
+			</article>
+
+			{% endfor %}
+		</div>
+	</section>
+
+	<!-- Posts List -->
+	<section>
+		<ul class="posts">
+			{% for message in messageNews %}
+			<li>
+				<div class="comment clearfix">
+					<div class="comment-img">
+						<img class="userRad" src="{{message.userImg}}" alt="">
+					</div>
+					<div class="comment-content">
+						<div class="comment-name">
+							<span>{{ message.user }}</span>
+						</div>
+						<div class="comment-mes">{{ message.message | safe }}</div>
+					</div>
+				</div>
+			</li>
+			{% endfor %}
+		</ul>
+	</section>
+</section>
+<!-- Main -->
+<div id="main">
+	<section class="article">
+		<header>
+			<div class="article-title">
+				<h2>{{ content.title }}</h2>
+			</div>
+			<div class="article-meta">
+				<span>{{ content.addTime.toString() | date }}</span>
+				<span class="user">
+					作者（{{ content.user }}）
+				</span>
+				<span class="views">
+					阅读（{{ content.views }}）
+				</span>
+				<span class="comments">
+					评论（{{ content.comments.length }}）
+				</span>
+			</div>
+		</header>
+		<section>
+			<div class="article-description">
+				<p>{{ content.description }}</p>
+			</div>
+			<div class="article-content">
+				{{ content.content | safe }}
+			</div>
+			<div class="laud"><i class="fa fa-thumbs-up"></i><br><span>{{content.laud}}</span></div>
+		</section>
+	</section>
+	<section class="comment-form">
+		<form class="form-box" method="post">
+			{% if userInfo._id %}
+			<div class="userBox clearfix">
+				<div class="box">
+					<img class="userRad" src="{{ userInfo.userImg }}" alt="">
+				</div>
+				<div class="box">
+					<p>已登录：{{ userInfo.userName }}， <a href="javascript:;" class="logout">注销</a>？</p>
+					<p><i class="fa fa-hand-o-right"></i><span class="count">已经有0条评论抢在你前面了~</span></p>
+				</div>
+			</div>
+			{% else %}
+			<div class="userBox clearfix">
+				<div class="box">
+					<img class="userRad" src="/public/images/userImg/none.png" alt="">
+				</div>
+				<div class="box">
+					<p>欢迎新朋友的评论！</p>
+					<p><i class="fa fa-hand-o-right"></i><span class="count">已经有0条评论抢在你前面了~</span></p>
+				</div>
+			</div>
+
+			<div class="row uniform">
+				<div class="6u 12u$(xsmall)">
+					<input type="text" name="userName" id="demo-name" value="" placeholder="请输入用户名（必填）">
+				</div>
+				<div class="6u$ 12u$(xsmall)">
+					<input type="email" name="userEmail" id="demo-email" value="" placeholder="请输入邮箱（必填）">
+				</div>
+			</div>
+			{% endif %}
+			<div class="row uniform">
+				<div class="12u$">
+					<div id="editor"></div>
+					<p class="warning"></p>
+				</div>
+				<div class="12u$">
+					<div class="actions">
+						<button type="button" class="btn">评论</button>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="alert" >
+			<strong>亲爱的朋友：</strong> 上面的信息框请您不要胡乱填写，尊重博主就等于尊重您自己，祝您每天都有一个好心情！
+		</div>
+	</section>
+	<section id="comment">
+		<div id="message-conent"></div>
+		<div class="pages">
+			<div id="pages" class="clearfix"></div>
+		</div>
+	</section>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="/public/assets/js/wangEditor.min.js"></script>
 <script>
-    //实例化编辑器
-    //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
-    var ue = UE.getEditor('editor');
+	if(localStorage.getItem("l{{ content._id }}")){
+		$('.article .laud').addClass('ban');
+	}
+	if(!localStorage.getItem("v{{ content._id }}")){
+		$.ajax({
+			type: "post",
+			url: "/api/view",
+			data: {
+				id: "{{ content._id }}"
+			},
+			dataType: "json",
+			success: function(result){
+				if( !result.code ){
+                    $('.article .views').html(`阅读（${ result.message }）`);
+                    localStorage.setItem("v{{ content._id }}",'0');
+                }
+			}
+		})
+	}
+	$('.article .laud').on('click',function(){
+		$.ajax({
+			type: "post",
+			url: "/api/laud",
+			data: {
+				id: "{{ content._id }}"
+			},
+			dataType: "json",
+			success: function(result){
+				if( !result.code ){
+                    $('.laud span').html(result.message);
+                    $('.article .laud').addClass('ban');
+                    localStorage.setItem("l{{ content._id }}",'0');
+                }
+			}
+		})
+	})
+	
 
-    function isFocus(e){
-        alert(UE.getEditor('editor').isFocus());
-        UE.dom.domUtils.preventDefault(e)
-    }
-    function setblur(e){
-        UE.getEditor('editor').blur();
-        UE.dom.domUtils.preventDefault(e)
-    }
-    function insertHtml() {
-        var value = prompt('插入html代码', '');
-        UE.getEditor('editor').execCommand('insertHtml', value)
-    }
-    function createEditor() {
-        enableBtn();
-        UE.getEditor('editor');
-    }
-    function getAllHtml() {
-        alert(UE.getEditor('editor').getAllHtml())
-    }
-    function getContent() {
-        var arr = [];
-        arr.push("使用editor.getContent()方法可以获得编辑器的内容");
-        arr.push("内容为：");
-        arr.push(UE.getEditor('editor').getContent());
-        return  arr.join("\n");
-    }
-    function getPlainTxt() {
-        var arr = [];
-        arr.push("使用editor.getPlainTxt()方法可以获得编辑器的带格式的纯文本内容");
-        arr.push("内容为：");
-        arr.push(UE.getEditor('editor').getPlainTxt());
-        alert(arr.join('\n'))
-    }
-    function setContent(isAppendTo) {
-        var arr = [];
-        arr.push("使用editor.setContent('欢迎使用ueditor')方法可以设置编辑器的内容");
-        UE.getEditor('editor').setContent('欢迎使用ueditor', isAppendTo);
-        alert(arr.join("\n"));
-    }
-    function setDisabled() {
-        UE.getEditor('editor').setDisabled('fullscreen');
-        disableBtn("enable");
-    }
+    let E = window.wangEditor;
+    let editor = new E('#editor');
+    editor.customConfig.zIndex = 10;
 
-    function setEnabled() {
-        UE.getEditor('editor').setEnabled();
-        enableBtn();
-    }
+    // 自定义菜单配置
+    editor.customConfig.menus = [
+        'emoticon',
+        'code'
+    ];
+    // 配置服务器端地址
+    editor.customConfig.uploadImgServer = '/api/upload/img';
+    editor.customConfig.uploadImgHooks = {
+        customInsert: function (insertImg, result, editor) {
+            let url = '/public/images/upload/'+result.message;
+            insertImg(url)
+        }
+    };
+    editor.create();
+    $('#editor .w-e-text-container').css('height','160px');
+ 
 
-    function getText() {
-        //当你点击按钮时编辑区域已经失去了焦点，如果直接用getText将不会得到内容，所以要在选回来，然后取得内容
-        var range = UE.getEditor('editor').selection.getRange();
-        range.select();
-        var txt = UE.getEditor('editor').selection.getText();
-        alert(txt)
-    }
+ 	//分页
+    let prepage = 10;
+    let page = 1;
+    let pages = 0;
+    let comments = [];
+    $('.form-box .btn').on('click',function(){
 
-    function getContentTxt() {
-        var arr = [];
-        arr.push("使用editor.getContentTxt()方法可以获得编辑器的纯文本内容");
-        arr.push("编辑器的纯文本内容为：");
-        arr.push(UE.getEditor('editor').getContentTxt());
-        alert(arr.join("\n"));
+        $('.form-box .warning').html('');
+        let userName = $('.form-box').find('[name = userName]').val();
+        let userEmail = $('.form-box').find('[name = userEmail]').val();
+        let content = editor.txt.html();
+
+        if( typeof (userName) != "undefined" ){
+            if(userName == '' ){
+                $('.form-box .warning').html('用户名不能为空！');
+                return;
+            }
+            if(userEmail == '' ){
+                $('.form-box .warning').html('邮箱不能为空！');
+                return;
+            }
+            let regEmail = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+            if(!regEmail.test(userEmail ) ){
+                $('.form-box .warning').html('请输入正确的邮箱！');
+                return;
+            }
+		}
+
+        if(editor.txt.text() == '' ){
+            $('.form-box .warning').html('内容不能为空！');
+            return;
+        }
+        $.ajax({
+            type: 'post',
+            url: '/api/comment',
+            data: {
+            	id: "{{content._id}}",
+                userName: userName,
+                userEmail: userEmail,
+                content: content,
+				ip: returnCitySN
+            },
+            dataType: 'json',
+            success: function (result) {
+                $('.form-box .warning').html( result.message );
+                if( !result.code ){
+                    setTimeout(function () {
+                        editor.txt.html('');
+                        $('.form-box .warning').html('');
+                        if( typeof (userName) != "undefined" ){
+                        	$('.form-box').find('[name = userName]').val('');
+							$('.form-box').find('[name = userEmail]').val('');
+                        }
+                    },500);
+                    comments = result.data.reverse();
+                    renderComment();
+                    pageFn();
+                }
+            }
+        });
+    });
+    
+    function date(str,style) {
+        let date = new Date(str);
+        function p(s) {
+            return s < 10 ? '0' + s: s;
+        }
+        if( style == "文字" ){
+            return date.getFullYear() + '年' + p((date.getMonth() + 1)) + '月' + p(date.getDate()) + '日  ' + p(date.getHours()) + ':' + p(date.getMinutes()) + ':' + p(date.getSeconds());
+        }else{
+            return date.getFullYear() + '-' + p((date.getMonth() + 1)) + '-' + p(date.getDate()) + '  ' + p(date.getHours()) + ':' + p(date.getMinutes()) + ':' + p(date.getSeconds());
+        }
     }
-    function hasContent() {
-        var arr = [];
-        arr.push("使用editor.hasContents()方法判断编辑器里是否有内容");
-        arr.push("判断结果为：");
-        arr.push(UE.getEditor('editor').hasContents());
-        alert(arr.join("\n"));
+    function renderComment() {
+    	$('.form-box .userBox .count').html(`已经有条${comments.length}评论抢在你前面了~`)
+    	$('.article .comments').html(`评论（${comments.length}）`)
+
+        pages = Math.max(Math.ceil(comments.length / prepage),1);
+        let start = Math.max(0, (page-1) * prepage);
+        let end = Math.min(start + prepage, comments.length);
+        let html = '';
+        for(let i=start; i<end; i++){
+            html += `<div class="comment clearfix">
+							<div class="comment-img">
+								<img class="userRad" src="${comments[i].userImg}" alt="">
+							</div>
+							<div class="comment-content">
+								<div class="comment-name clearfix">
+									<div class="left">
+										<span>${ comments[i].user }</span>
+									</div>
+									<div class="right">
+										<span class="ip">[${ comments[i].ip.cname }网友]</span>
+									</div>
+								</div>
+								<div class="comment-mes">${ comments[i].message }</div>
+								<div class="date">${ date(comments[i].addTime,'文字') }</div>
+							</div>
+						</div>`;
+        }
+        $('#message-conent').html(html);
+
+        if(!comments.length){
+    		$('#message-conent').html('<span class="null">暂无评论，抢一楼！</span>');
+    	}
     }
-    function setFocus() {
-        UE.getEditor('editor').focus();
+    function pageFn(){
+    	$('#pages').paging({
+		    initPageNo: page, // 初始页码
+		    totalPages: pages, //总页数
+		    totalCount: '', // 条目总数
+		    slideSpeed: 600, // 缓动速度。单位毫秒 
+		    callback: function(_page) { // 回调函数 
+		    	page = _page;
+		     	renderComment();
+		    }
+		})
     }
-    function deleteEditor() {
-        disableBtn();
-        UE.getEditor('editor').destroy();
-    }
-    function disableBtn(str) {
-        var div = document.getElementById('btns');
-        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
-        for (var i = 0, btn; btn = btns[i++];) {
-            if (btn.id == str) {
-                UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
-            } else {
-                btn.setAttribute("disabled", "true");
+    //每次页面重载的时候获取评论
+   	$.ajax({
+   		type: 'get',
+        url: '/api/comment',
+        data: {
+        	id: "{{content._id}}"
+        },
+        dataType: 'json',
+        success: function (responseData) {
+            comments = responseData.data.reverse();
+            renderComment();
+            if(comments.length){
+            	pageFn();
             }
         }
-    }
-    function enableBtn() {
-        var div = document.getElementById('btns');
-        var btns = UE.dom.domUtils.getElementsByTagName(div, "button");
-        for (var i = 0, btn; btn = btns[i++];) {
-            UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
-        }
-    }
+    });
 </script>
-
 {% endblock %}
