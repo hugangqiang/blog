@@ -92,6 +92,6 @@ mongoose.connect('mongodb://数据库用户名:数据库密码@服务器地址�
     }else{
         console.log('数据库连接成功');
         //监听http请求8080端口
-        app.listen(1024);
+        app.listen(8080);
     }
 });
