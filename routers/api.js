@@ -114,7 +114,7 @@ router.post('/user/login',function(req,res,next){
 //github登录
 router.get('/user/github',function(req,res,next){
     let code = req.query.code;
-    let src = "https://github.com/login/oauth/access_token?client_id=7ca065386fbcffcaace2&client_secret=e09114dc25147d0f739ab426b09de5a78b44fa9d&code="+code;
+    let src = "https://github.com/login/oauth/access_token?client_id=‘’&client_secret=‘’&code="+code;
     let token;
     axios.post(src).then(function (access) {
         let resUrl = url.parse('?'+ access.data, true).query
@@ -159,7 +159,7 @@ router.get('/user/github',function(req,res,next){
 router.get('/user/qq',function(req,res,next){
     if(req.query.state == "hu"){
         let code = req.query.code;
-        let src = "https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=101432076&client_secret=3c7ef3dc2f1f44dc772ab3232d73bde0&code="+code+"&redirect_uri=http://hugangqiang.com/api/user/qq";
+        let src = "https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=‘’&client_secret=‘’&code="+code+"&redirect_uri=http://hugangqiang.com/api/user/qq";
         let token;
         axios.get(src).then(function (access) {
             let resUrl = url.parse('?'+ access.data, true).query
@@ -170,7 +170,7 @@ router.get('/user/qq',function(req,res,next){
                         return obj.openid;
                     }
                     let openid = eval(datas.data);
-                    axios.get('https://graph.qq.com/user/get_user_info?access_token='+ token +'&oauth_consumer_key=101432076&openid='+openid).then(function(qqInfo){
+                    axios.get('https://graph.qq.com/user/get_user_info?access_token='+ token +'&oauth_consumer_key=‘’&openid='+openid).then(function(qqInfo){
                         Qq.findOne({
                             openid: openid
                         }).then(function ( userInfo ) {
@@ -369,9 +369,9 @@ router.post('/email/password',function(req, res){
         port: 465, // SMTP 端口
         secureConnection: true, // 使用 SSL
         auth: {
-            user: '1586638991@qq.com',
+            user: '‘’',
             //这里密码不是qq密码，是你设置的smtp密码
-            pass: 'nfkusnktizecbacc'
+            pass: '‘’'
         }
     });
     let mailOptions = {
