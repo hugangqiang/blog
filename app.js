@@ -46,7 +46,6 @@ env.addFilter('date', function(str,style) {
 app.use(bodyParser.json({limit: '10mb'}));
 app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
-
 //设置cookieb
 app.use(function (req, res, next) {
     req.cookies = new Cookies(req, res);
