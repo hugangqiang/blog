@@ -85,6 +85,7 @@ app.use('/admin',require('./routers/admin'));
 
 
 
+
 //连接数据库
 mongoose.connect('mongodb://数据库用户名:数据库密码@服务器地址加端口/blog',{useMongoClient: true},function( err ){
     if( err ){
